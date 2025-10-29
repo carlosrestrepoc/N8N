@@ -1,0 +1,638 @@
+{
+  "name": "Demo Asistente Voz",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 📥 WEBHOOK ENTRY POINT\n\n**Receives data from ElevenLabs:**\n\n**Body parameters:**\n- `fullName` - Patient name (only for booking)\n- `email` - Contact email (only for booking)\n- `phone` - Phone number (only for booking)\n- `date` - Format: YYYY-MM-DD\n- `time` - Format: HH:MM\n- `appointmentType` - Service type\n- `location` - Clinic location\n\n**Query parameter:**\n- `request` - \"check availability\" or blank for booking\n\n**⚙️ Setup Required:**\nChange the webhook path to your own unique ID for security.",
+        "height": 481,
+        "width": 510,
+        "color": 5
+      },
+      "id": "189344b2-c00f-4e8d-bb83-915599baa3c6",
+      "name": "Sticky Note - Webhook",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        400,
+        -96
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## ✏️ DATA PREPARATION\n\n**Extracts and formats:**\n- Combines `date` + `time` into single datetime field\n- Prepares all fields for calendar and email nodes\n\n**Output format:**\nYYYY-MM-DD HH:MM\n(e.g., \"2025-10-08 15:00\")",
+        "height": 481,
+        "width": 310,
+        "color": 5
+      },
+      "id": "a72a7302-1544-4b05-9e88-6b57d31f4ac4",
+      "name": "Sticky Note - Edit Fields",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        912,
+        -96
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 🔀 ROUTING LOGIC\n\n**Determines action type:**\n\n**Path 1 (True):** Availability Check\n- Triggered when `fullName` OR `email` is missing\n- Only date/time/type provided\n- Returns available/unavailable status\n\n**Path 2 (False):** Book Appointment\n- All fields present (name, email, phone, etc.)\n- Creates calendar event\n- Sends confirmation email",
+        "height": 485,
+        "width": 406,
+        "color": 6
+      },
+      "id": "76a83809-b63f-4044-8d16-3b7c479db567",
+      "name": "Sticky Note - Routing",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1216,
+        -96
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## ✅ BOOKING PATH\n\n**Creates Google Calendar Event**\n",
+        "height": 274,
+        "width": 255,
+        "color": 3
+      },
+      "id": "9f319d9f-9f3b-4c2f-9ea5-1bce0f5998d0",
+      "name": "Sticky Note - Booking",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1632,
+        480
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 📧 EMAIL CONFIRMATION\n\n**Sends an ppointment confirmation via Gmail**\n\n\n",
+        "height": 274,
+        "width": 357,
+        "color": 3
+      },
+      "id": "9047d2e7-0e38-4b25-a48b-328116364dab",
+      "name": "Sticky Note - Email",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1888,
+        480
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 🔍 AVAILABILITY CHECK PATH\n\n**Check if specific time slot is free**\n→ If available: Return success\n→ If unavailable: Find alternative slots\n\n**⚙️ Setup Required:**\nConnect Google Calendar and select your calendar",
+        "height": 482,
+        "width": 453,
+        "color": 7
+      },
+      "id": "57dd5846-e09d-46a6-ae03-e48d4d64e2c9",
+      "name": "Sticky Note - Availability",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1616,
+        -96
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 🚀 QUICK START GUIDE\n\n**1. Configure Credentials:**\n   - [x] Google Calendar OAuth2\n   - [x] Gmail OAuth2\n\n**2. Select Calendar:**\n   - Open all Google Calendar nodes\n   - Choose your booking calendar from dropdown\n\n**3. Customize Settings:**\n   - [ ] Update webhook path (security)\n   - [ ] Adjust business hours in \"Sort Available Slots\" code\n   - [ ] Modify timezone \n   - [ ] Update clinic details in email template\n\n**4. Test Workflow:**\n   - Use pinned test data\n   - Test both availability check and booking\n\n**5. Connect to ElevenLabs:**\n   - Copy production webhook URL\n   - Configure agent functions\n   - Map parameters correctly\n\n**6. Go Live:**\n   - Activate workflow\n   - Test with real voice calls",
+        "height": 900,
+        "width": 405,
+        "color": 4
+      },
+      "id": "d2d7673a-70f4-4419-994b-53c8872d2f8c",
+      "name": "Sticky Note - Quick Start",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        -96
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 🐛 TROUBLESHOOTING\n\n**Workflow not triggering:**\n- Check webhook URL is correct\n- Verify workflow is active\n- Check ElevenLabs function configuration\n\n**Calendar not syncing:**\n- Reconnect Google Calendar credential\n- Verify calendar ID is correct\n- Check OAuth permissions\n\n**Email not sending:**\n- Verify Gmail credential\n- Check spam folder\n- Confirm email address format\n\n**Timezone issues:**\n- Adjust timezone in your Calendar\n\n**Slots showing as unavailable:**\n- Check calendar has no conflicts",
+        "height": 524,
+        "width": 409,
+        "color": 4
+      },
+      "id": "469564c4-76ea-4803-91f9-da149c6e3a1a",
+      "name": "Sticky Note - Troubleshooting",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        528
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "2be0d61e-a2a0-48de-867e-4892849296b4",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "67f96565-835e-423d-8188-4a81fcf458dd",
+      "name": "Webhook1",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        640,
+        416
+      ],
+      "webhookId": "2be0d61e-a2a0-48de-867e-4892849296b4",
+      "typeVersion": 2.1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "1d0c317e-477a-437e-918a-a761e9069115",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.available }}",
+              "rightValue": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "89fdcf78-aeb9-40dc-acce-364e419ca0cc",
+      "name": "Available?1",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1904,
+        224
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "carlosrestrepoc@gmail.com",
+          "mode": "list",
+          "cachedResultName": "carlosrestrepoc@gmail.com"
+        },
+        "returnAll": true,
+        "timeMin": "={{ $('Webhook1').item.json.body.fecha_hora }}",
+        "options": {}
+      },
+      "id": "70ff101c-e19e-4db9-b03f-9cd0fff59b12",
+      "name": "Check Availability Again",
+      "type": "n8n-nodes-base.googleCalendar",
+      "position": [
+        2160,
+        304
+      ],
+      "typeVersion": 1.3,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "Jf2amDds8yCMuIaQ",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4478c006-d158-4854-bf88-5e0fa1c8b936",
+              "name": "nombre",
+              "type": "string",
+              "value": "={{ $json.body.nombre }} {{ $json.body.apellido }}"
+            },
+            {
+              "id": "b7bb33fc-426d-40ce-91b9-93844a269bfd",
+              "name": "email",
+              "type": "string",
+              "value": "={{ $json.body.email }}"
+            },
+            {
+              "id": "66f90820-45ae-4a98-ad17-f5ee72042680",
+              "name": "telefono",
+              "type": "string",
+              "value": "={{ $json.body.telefono }}"
+            },
+            {
+              "id": "0992fb3c-06e9-49f2-aba1-49fcee27172a",
+              "name": "descripcion",
+              "type": "string",
+              "value": "={{ $json.body.descripcion }}"
+            },
+            {
+              "id": "a969fb63-fee2-4e07-96d4-1f1468d8ed43",
+              "name": "fecha_hora",
+              "type": "string",
+              "value": "={{ $json.body.fecha_hora }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "014502ae-cc57-4de9-93da-6a9124e095d4",
+      "name": "Set Up Variables",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1008,
+        416
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "resource": "calendar",
+        "calendar": {
+          "__rl": true,
+          "value": "carlosrestrepoc@gmail.com",
+          "mode": "list",
+          "cachedResultName": "carlosrestrepoc@gmail.com"
+        },
+        "timeMin": "={{ $json.fecha_hora }}",
+        "timeMax": "={{ new Date(new Date($json.fecha_hora.replace(' ', 'T')).getTime() + 30 * 60000)\n    .toLocaleString('sv-SE')\n    .replace('T', ' ') \n    .replace(' ', 'T') }}",
+        "options": {}
+      },
+      "id": "a2c1461d-14b3-49f6-a2a7-68f24c8e5b1c",
+      "name": "Get availability in a calendar",
+      "type": "n8n-nodes-base.googleCalendar",
+      "position": [
+        1696,
+        224
+      ],
+      "typeVersion": 1.3,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "Jf2amDds8yCMuIaQ",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Set Up Variables').item.json.email }}",
+        "subject": "={{ $json.summary }} en SGTech {{ \n(() => {\n  const dateStr = $('Webhook1').item.json.body.fecha_hora; // Ej: \"2025-10-24 08:00:00\"\n  const [datePart, timePart] = dateStr.split(' ');\n  const [year, month, day] = datePart.split('-').map(Number);\n  const [hour, minute] = timePart.split(':').map(Number);\n\n  const meses = [\n    'enero','febrero','marzo','abril','mayo','junio',\n    'julio','agosto','septiembre','octubre','noviembre','diciembre'\n  ];\n\n  // Formatear hora en 12h con AM/PM\n  let h = hour % 12 || 12;\n  const ampm = hour >= 12 ? 'PM' : 'AM';\n  const horaFormateada = `${h}:${minute.toString().padStart(2, '0')} ${ampm}`;\n\n  return `Ciata confirmada con SG Tech - ${day} de ${meses[month - 1]} a las ${horaFormateada}`;\n})()\n}}\n",
+        "message": "=<p>Hola <b>{{ $('Webhook1').item.json.body.nombre }}</b> 👋</p>\n\n<p>Tu reunión con <b>SG Tech</b> ha sido confirmada ✅</p>\n\n<p>📅 <b>Fecha y hora:</b>\n{{\n  (() => {\n    const dateStr = $('Webhook1').item.json.body.fecha_hora;\n    const [datePart, timePart] = dateStr.split(' ');\n    const [year, month, day] = datePart.split('-').map(Number);\n    const [hour, minute] = timePart.split(':').map(Number);\n    const meses = [\n      'enero','febrero','marzo','abril','mayo','junio',\n      'julio','agosto','septiembre','octubre','noviembre','diciembre'\n    ];\n    let h = hour % 12 || 12;\n    const ampm = hour >= 12 ? 'PM' : 'AM';\n    const horaFormateada = `${h}:${minute.toString().padStart(2, '0')} ${ampm}`;\n    return `${day} de ${meses[month - 1]} a las ${horaFormateada}`;\n  })()\n}}\n</p>\n\n<p>🧾 <b>Descripción:</b> {{ $('Set Up Variables').item.json.description || 'Asesoría tecnológica personalizada.' }}</p>\n\n<hr>\n\n<h3>Detalles de la reunión:</h3>\n<ul>\n  <li>⚙️ <b>Tema:</b>{{ $('Webhook1').item.json.body.descripcion }}</li>\n  <li>🏢 <b>Empresa:</b> SG Tech</li>\n  <li>⚙️ <b>Área:</b> Automatización, IA Consulting o Gobierno de Datos</li>\n  <li>⏱️ <b>Duración estimada:</b> 30–45 minutos</li>\n  <li>📍 <b>Modalidad:</b> Virtual (recibirás el enlace por correo)</li>\n  <li>📧 <b>Contacto:</b> soporte@sgtech.tech</li>\n</ul>\n\n<p>Gracias por agendar con <b>SG Tech</b>.<br>\nNos vemos el día {{\n  (() => {\n    const dateStr = $('Webhook1').item.json.body.fecha_hora;\n    const [datePart] = dateStr.split(' ');\n    const [year, month, day] = datePart.split('-').map(Number);\n    const meses = [\n      'enero','febrero','marzo','abril','mayo','junio',\n      'julio','agosto','septiembre','octubre','noviembre','diciembre'\n    ];\n    return `${day} de ${meses[month - 1]}`;\n  })()\n}} 💼</p>\n\n<p>Saludos cordiales,<br>\n<b>Equipo SG Tech</b><br>\n📞 +57 320 000 7788 · 🌐 <a href=\"https://www.sgtech.tech\" target=\"_blank\">www.sgtech.tech</a></p>\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "1036422a-2114-4532-bfd0-e8265485f149",
+      "name": "Send a message",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        1904,
+        592
+      ],
+      "webhookId": "3d1d3b22-90ee-4cc0-a45b-acc4e6452e68",
+      "typeVersion": 2.1,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CqL6nv8TJOmmkCLG",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=Thank you. The appointment is scheduled on {{\n  (() => {\n    const dateStr = $('Set Up Variables').item.json.date; // e.g., \"2025-10-07 15:00\"\n    const [datePart, timePart] = dateStr.split(' ');\n    const [year, month, day] = datePart.split('-').map(Number);\n\n    // Month names\n    const months = [\n      'January', 'February', 'March', 'April', 'May', 'June',\n      'July', 'August', 'September', 'October', 'November', 'December'\n    ];\n\n    // Ordinal function\n    function ordinal(n) {\n      if (n > 3 && n < 21) return 'th';\n      switch (n % 10) {\n        case 1: return 'st';\n        case 2: return 'nd';\n        case 3: return 'rd';\n        default: return 'th';\n      }\n    }\n\n    return `${months[month - 1]} the ${day}${ordinal(day)} at ${timePart}`;\n  })()\n}}",
+        "options": {}
+      },
+      "id": "a4bf7259-7a24-4efa-a3d0-d3ddb640c23c",
+      "name": "Confirm Booking ",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        2112,
+        592
+      ],
+      "typeVersion": 1.4
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=Gracias por esperarme, acabo de validar y si hay disponibilidad para esta fecha.",
+        "options": {}
+      },
+      "id": "a6d7552a-be25-4449-8e92-3ae646c2dfac",
+      "name": "Confirm Available Times",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        2160,
+        144
+      ],
+      "typeVersion": 1.4
+    },
+    {
+      "parameters": {
+        "jsCode": "// Collect all booked intervals from input items (previous node)\nconst bookedIntervals = [];\nfor (const item of $input.all()) {\n  bookedIntervals.push({\n    start: new Date(item.json.start.dateTime),\n    end: new Date(item.json.end.dateTime)\n  });\n}\n\n// Settings\nconst days = 30;\nconst workStartHour = 7;\nconst workEndHour = 17; // exclusive, so last slot starts at 16:30\nconst slotDurationMinutes = 30;\n\n// Helper to format date to ISO8601 with +02:00\nfunction toISOWithFixedOffset(date) {\n  const pad = n => String(n).padStart(2, '0');\n  return date.getFullYear() + '-' +\n    pad(date.getMonth() + 1) + '-' +\n    pad(date.getDate()) + 'T' +\n    pad(date.getHours()) + ':' +\n    pad(date.getMinutes()) + ':00+02:00';\n}\n\n// Helper to check if two intervals overlap\nfunction isOverlapping(slotStart, slotEnd, bookedStart, bookedEnd) {\n  return slotStart < bookedEnd && slotEnd > bookedStart;\n}\n\n// Get current time in +02:00 (Europe/Zurich) timezone\nconst now = new Date();\nconst nowUtc = now.getTime() + (now.getTimezoneOffset() * 60000);\nconst nowPlus2 = new Date(nowUtc + 2 * 60 * 60000);\n\nnowPlus2.setSeconds(0, 0); // ignore seconds/milliseconds\n\nlet available = [];\n\nfor (let d = 0; d < days; d++) {\n  for (let h = workStartHour; h < workEndHour; h++) {\n    for (let m = 0; m < 60; m += slotDurationMinutes) {\n      let slotStart = new Date(nowPlus2);\n      slotStart.setDate(slotStart.getDate() + d);\n      slotStart.setHours(h, m, 0, 0);\n\n      let slotEnd = new Date(slotStart);\n      slotEnd.setMinutes(slotEnd.getMinutes() + slotDurationMinutes);\n\n      // Exclude slots in the past\n      if (slotStart < nowPlus2) continue;\n\n      // Check for overlap with any booked interval\n      let overlaps = bookedIntervals.some(b =>\n        isOverlapping(slotStart, slotEnd, b.start, b.end)\n      );\n\n      if (!overlaps) {\n        available.push({ available: toISOWithFixedOffset(slotStart) });\n      }\n    }\n  }\n}\n\nreturn available.map(a => ({ json: a }));"
+      },
+      "id": "33b5036b-f13f-45b2-b303-9d0b5c74759c",
+      "name": "Sort Available Slots",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        2368,
+        304
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "available"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bf4972c5-e98a-449d-a5c5-5e677a156fba",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        2576,
+        304
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=Sorry, this time slot is unavailable right now. You may have another time in your mind?",
+        "options": {}
+      },
+      "id": "12ac8a51-cb49-4318-aa82-4a824aae0c1c",
+      "name": "Confirm The Time's Unavailable",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        2784,
+        304
+      ],
+      "typeVersion": 1.4
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "f586362a-6775-4692-b290-bc43bfdeb361",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.nombre }}",
+              "rightValue": "check availability"
+            },
+            {
+              "id": "1b48aa09-72f2-4d20-8cac-e5e0adb80f28",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.email }}",
+              "rightValue": ""
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "935933c2-3117-4a17-9b58-26a53cba5d7b",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1360,
+        416
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "carlosrestrepoc@gmail.com",
+          "mode": "list",
+          "cachedResultName": "carlosrestrepoc@gmail.com"
+        },
+        "start": "={{ $json.fecha_hora }}",
+        "end": "=\n{{ new Date(new Date($json.fecha_hora.replace(' ', 'T')).getTime() + 30 * 60000) .toLocaleString('sv-SE') .replace('T', ' ') .replace(' ', 'T') }}",
+        "additionalFields": {
+          "attendees": [
+            "={{ $json.email }}"
+          ],
+          "description": "={{ $json.descripcion }}",
+          "summary": "=Reunión First Touch -  {{ $json.nombre }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        1696,
+        592
+      ],
+      "id": "0c600b4e-ec32-4bf7-82e0-9d79f7eae1e3",
+      "name": "Create an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "Jf2amDds8yCMuIaQ",
+          "name": "Google Calendar account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Webhook1": [
+      {
+        "json": {
+          "headers": {
+            "host": "8f4c02b71e67.ngrok-free.app",
+            "user-agent": "ElevenLabs/1.0",
+            "content-length": "319",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br",
+            "content-type": "application/json",
+            "x-forwarded-for": "34.59.11.47",
+            "x-forwarded-host": "8f4c02b71e67.ngrok-free.app",
+            "x-forwarded-proto": "https"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "descripcion": "Una unidad de inteligencia artificial que permita extraer información de los correos electrónicos y los lleve a una base de datos en Postgres",
+            "fecha_hora": "2025-10-29 15:00:00",
+            "nombre": "Carlos",
+            "apellido": "Restrepo",
+            "email": "carlos.restrepo@sgtech.tech",
+            "telefono": "311-579-3268"
+          },
+          "webhookUrl": "http://localhost:5678/webhook/2be0d61e-a2a0-48de-867e-4892849296b4",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get availability in a calendar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Set Up Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Confirm The Time's Unavailable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Available?1": {
+      "main": [
+        [
+          {
+            "node": "Confirm Available Times",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check Availability Again",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Confirm Booking ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Up Variables": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort Available Slots": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Availability Again": {
+      "main": [
+        [
+          {
+            "node": "Sort Available Slots",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get availability in a calendar": {
+      "main": [
+        [
+          {
+            "node": "Available?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "6132d2f8-406c-46da-9b0a-fdfb5b1e4b12",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "64131b8660a0fc101c49c977e6d21c2e33ebb5bea307b2b26c6b5d01965f154b"
+  },
+  "id": "esNsrtLhQHPpMEKv",
+  "tags": []
+}
