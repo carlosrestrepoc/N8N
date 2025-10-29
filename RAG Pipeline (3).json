@@ -1,0 +1,350 @@
+{
+  "name": "RAG Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Sube tu archivo acá",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "File",
+              "fieldType": "file",
+              "acceptFileTypes": ".pdf",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c315df6f-6ece-48a6-8397-d3ecb930b024",
+      "name": "On form submission",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        0,
+        112
+      ],
+      "webhookId": "4e1e20d4-f759-42c8-8439-87b93f43aa7c",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "mode": "id",
+          "value": "rag_collection"
+        },
+        "options": {}
+      },
+      "id": "8960eaaa-c726-49ad-924a-699f07657a75",
+      "name": "Qdrant Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "position": [
+        224,
+        112
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "qdrantApi": {
+          "id": "M4ydI3kTi4a1UHUQ",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "id": "17c51065-e54e-41ad-9db7-d763f91b7b5c",
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "position": [
+        368,
+        320
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "chunkSize": 800,
+        "chunkOverlap": 150,
+        "options": {}
+      },
+      "id": "2eadb237-4f29-48cf-90be-5ffda46dca2e",
+      "name": "Recursive Character Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "position": [
+        464,
+        544
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Data Ingestion\n**Add data to the semantic database",
+        "height": 700,
+        "width": 840,
+        "color": 3
+      },
+      "id": "d5d30c6b-f1c8-4351-81c8-499bbe0afd1d",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -144,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "a515746d-570e-47e3-abab-16613cdaf106",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "position": [
+        944,
+        80
+      ],
+      "webhookId": "5e56a263-3a40-44bd-bc9d-1cfb3bc2a87d",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Eres un asistente útil y preciso.\nTienes acceso a un sistema de recuperación (RAG) que te entrega fragmentos de texto relevantes desde una base de conocimiento.\nUsa esa información para responder de forma completa y fundamentada.\n\nReglas:\n1. Basa tus respuestas principalmente en los documentos recuperados.\n2. Si el contexto no tiene la respuesta, indícalo con claridad.\n3. No inventes información que no esté en el contexto.\n4. Si el contexto incluye listas, enumeraciones o elementos numerados, **enuméralos todos sin omitir ninguno.**\n5. Combina los fragmentos de manera lógica: resume, infiere o compara cuando sea necesario, pero **no elimines detalles explícitos**.\n6. Redacta de forma natural, sin formato técnico de citas a menos que se pida.\n7. Mantén un tono claro, profesional y contextualizado.\n8. Si la pregunta requiere análisis o razonamiento, explica tu lógica usando los datos disponibles.\n"
+        }
+      },
+      "id": "1913b1f5-1aef-410d-ab0c-89d458c37864",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1216,
+        80
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {},
+      "id": "675d4cc8-f626-40b2-8061-1b645ba17486",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        1264,
+        320
+      ],
+      "typeVersion": 1.3
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "retriever",
+        "toolDescription": "Retrieve data from a semantic database to answer questions",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "rag_collection",
+          "mode": "list",
+          "cachedResultName": "rag_collection"
+        },
+        "options": {}
+      },
+      "id": "6f7ccb7b-e90f-48f9-808b-ed2cab1b0a7c",
+      "name": "Qdrant Vector Store1",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "position": [
+        1536,
+        352
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "qdrantApi": {
+          "id": "M4ydI3kTi4a1UHUQ",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## RAG Chatbot\n**Chat with your data",
+        "height": 700,
+        "width": 1200,
+        "color": 4
+      },
+      "id": "b136fc85-242e-484b-9e10-de85b7f16001",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        736,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        112,
+        320
+      ],
+      "id": "cdad97e7-5608-4ef7-a1f3-185ccd3e116a",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "c6L8r4wOhl65h8t1",
+          "name": "Google Gemini(PaLM) SGTECH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1088,
+        304
+      ],
+      "id": "6a62dbc2-3d21-44f1-965b-7eee5dc0ab87",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "c6L8r4wOhl65h8t1",
+          "name": "Google Gemini(PaLM) SGTECH"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        528
+      ],
+      "id": "943ded7f-18b1-4148-8dde-72023356edbc",
+      "name": "Embeddings Google Gemini1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "c6L8r4wOhl65h8t1",
+          "name": "Google Gemini(PaLM) SGTECH"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7afbd592-c80d-49c3-b3d4-8747fa481420",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "64131b8660a0fc101c49c977e6d21c2e33ebb5bea307b2b26c6b5d01965f154b"
+  },
+  "id": "ABLlIh3fOY39WcKj",
+  "tags": []
+}
