@@ -1,0 +1,1034 @@
+{
+  "name": "PoC Adium - Image",
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Recibes el texto completo de la IA\nconst textoIA = $json.content?.parts?.[0]?.text || $json.text || \"\";\n\n// Limpiar el texto - múltiples estrategias\nlet jsonString = textoIA;\n\n// Estrategia 1: Remover los backticks y la palabra 'json'\njsonString = jsonString\n  .replace(/```json/g, '')    \n  .replace(/```/g, '')        \n  .trim();\n\n// Estrategia 2: Si todavía tiene contenido no JSON, extraer solo el JSON\nif (jsonString.includes('{') && jsonString.includes('}')) {\n  const inicio = jsonString.indexOf('{');\n  const fin = jsonString.lastIndexOf('}') + 1;\n  jsonString = jsonString.substring(inicio, fin);\n}\n\n// Estrategia 3: Limpiar saltos de línea y espacios extras\njsonString = jsonString\n  .replace(/\\n/g, ' ')        \n  .replace(/\\s+/g, ' ')       \n  .trim();\n\n// Debug\nconsole.log('Texto limpio:', jsonString);\n\n// Parsear a objeto JavaScript\nlet datosExtraidos;\ntry {\n  datosExtraidos = JSON.parse(jsonString);\n  console.log('✅ JSON parseado correctamente');\n} catch (error) {\n  try {\n    const jsonMatch = textoIA.match(/\\{[\\s\\S]*\\}/);\n    if (jsonMatch) {\n      jsonString = jsonMatch[0];\n      datosExtraidos = JSON.parse(jsonString);\n      console.log('✅ JSON parseado con limpieza agresiva');\n    } else {\n      throw new Error('No se pudo encontrar JSON en el texto');\n    }\n  } catch (error2) {\n    throw new Error(`Error parseando JSON de IA: ${error2.message}. Texto: ${textoIA.substring(0, 200)}...`);\n  }\n}\n\n// Verificar datos\nif (!datosExtraidos || typeof datosExtraidos !== 'object') {\n  throw new Error('JSON de IA está vacío o es inválido');\n}\n\nconsole.log(`✅ Extraídos ${Object.keys(datosExtraidos).length} campos`);\n\nreturn { \n  json: { \n    ...datosExtraidos,   // 👈 EXPANDE directo el objeto (sin wrapper)\n    originalText: textoIA, \n    cleanedText: jsonString,\n    messageId: $json.messageId || \"\"  // ← ESTA LÍNEA ES CRUCIAL\n  } \n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        496
+      ],
+      "id": "3220d613-d3be-43f0-96da-4f3a3f9d636d",
+      "name": "Transf. Data",
+      "notesInFlow": true,
+      "notes": "Transforma los resultados entregados por la IA a un formato JSON correcto."
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "simple": false,
+        "filters": {
+          "labelIds": [
+            "Label_8709460902111807610"
+          ]
+        },
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -1952,
+        992
+      ],
+      "id": "d01a3424-7171-4ccb-802a-97925dad70af",
+      "name": "Captura Correos",
+      "webhookId": "97f6cc97-32ad-43d5-98dc-200c85e09712",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Fgc7QFtwVXJIrozt",
+          "name": "Gmail SGTECH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const b = $binary || {};\nlet pdfCount = 0;\nlet imgCount = 0;\nlet fileType = \"\";\n\nfor (const [, bin] of Object.entries(b)) {\n  const ext = (bin.fileExtension || '').toLowerCase();\n  const mt  = (bin.mimeType || '').toLowerCase();\n\n  // Detectar PDF\n  if (ext === 'pdf' || mt.includes('application/pdf')) {\n    pdfCount++;\n    fileType = \"pdf\";\n  }\n\n  // Detectar imágenes comunes (jpg, jpeg, png)\n  else if (\n    ['jpg', 'jpeg', 'png'].includes(ext) ||\n    mt.includes('image/jpeg') ||\n    mt.includes('image/png')\n  ) {\n    imgCount++;\n    fileType = \"image\";\n  }\n}\n\n// Si hay varios archivos, prioriza PDF sobre imagen\nif (pdfCount > 0) fileType = \"pdf\";\nelse if (imgCount > 0) fileType = \"image\";\n\nreturn {\n  json: {\n    messageId: $json.id,\n    pdfCount,\n    imgCount,\n    fileType\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1792,
+        992
+      ],
+      "id": "136c3c0d-d60b-45e3-b749-60fff3f35d2b",
+      "name": "Conteo PDF"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "79445ead-001a-4e37-8554-11d10cb2b9e5",
+              "leftValue": "={{ $json.pdfCount }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "90a35f5d-515a-436a-8337-e655e884cdb0",
+              "leftValue": "={{ $json.imgCount }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1648,
+        992
+      ],
+      "id": "83cd6baf-10ba-46df-bfe8-3aa76eca8cfe",
+      "name": "Valida PDF"
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $('Valida PDF').item.json.messageId }}",
+        "labelIds": [
+          "Label_139585039819307260"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -800,
+        1360
+      ],
+      "id": "0e4e0416-c9b6-43c1-8a7f-c94e9a968d70",
+      "name": "Mueve a Descartados",
+      "webhookId": "6cc0d069-1bd6-49a5-a7ec-2c0911dca874",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Fgc7QFtwVXJIrozt",
+          "name": "Gmail SGTECH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "removeLabels",
+        "messageId": "={{ $('Valida PDF').item.json.messageId }}",
+        "labelIds": [
+          "Label_8709460902111807610"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -800,
+        1216
+      ],
+      "id": "5d1c12d0-98ac-40f1-a69e-7d4e3c476526",
+      "name": "Remueve de Pendientes",
+      "webhookId": "721e3b70-8660-4a54-8d72-a7d9a25cb857",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Fgc7QFtwVXJIrozt",
+          "name": "Gmail SGTECH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "removeLabels",
+        "messageId": "={{ $json.messageId }}",
+        "labelIds": [
+          "Label_8709460902111807610"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -1472,
+        816
+      ],
+      "id": "2ed14bcb-f153-4313-a64d-277e25454ecf",
+      "name": "Remueve de Pendientes1",
+      "webhookId": "721e3b70-8660-4a54-8d72-a7d9a25cb857",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Fgc7QFtwVXJIrozt",
+          "name": "Gmail SGTECH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{$json.messageId}}",
+        "labelIds": [
+          "Label_722511627468745250"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -1472,
+        640
+      ],
+      "id": "fd8eb487-a721-4bf2-a396-2a41499c3cc1",
+      "name": "Mueve a Procesados",
+      "webhookId": "6cc0d069-1bd6-49a5-a7ec-2c0911dca874",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Fgc7QFtwVXJIrozt",
+          "name": "Gmail SGTECH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const orden = $json.orden_compra || {};\nconst messageId = $json.messageId || \"\";\n\n// Si no tiene número, retornar null para que n8n lo omita\nif (!orden.numero || orden.numero.trim() === \"\") {\n  console.log(`❌ Filtrado: Orden sin número - MessageId: ${messageId}`);\n  return null; // n8n omitirá este item automáticamente\n}\n\nreturn {\n  json: {\n    tipo: \"orden\",\n    numero: orden.numero,\n    fecha_orden: orden.fecha_orden || \"\",\n    fecha_entrega: orden.fecha_entrega || \"\",\n    forma_pago: orden.forma_pago || \"\",\n    plazo_pago: orden.plazo_pago || \"\",\n    proveedor_nombre: orden.nombre_empresa || \"\",\n    proveedor_nit: orden.nit_comprador || \"\",\n    direccion: orden.direccion_cliente || \"\",\n    ciudad: orden.ciudad_comprador || \"\",\n    messageId: messageId\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        416
+      ],
+      "id": "e065e43d-1e57-42a7-b253-a61a726fcef4",
+      "name": "Organiza Encabezados"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recoger todos los correos procesados\nconst entradas = $input.all();\nconst out = [];\n\nfor (const entrada of entradas) {\n  const datos = entrada.json;\n\n  const orden = datos.orden_compra || {};\n  const items = Array.isArray(datos.items) ? datos.items : [];\n\n  // 👇 Solo procesar si existe numero y no está vacío\n  if (orden.numero && orden.numero.toString().trim() !== \"\") {\n    for (const item of items) {\n      out.push({\n        json: {\n          tipo: \"item\",\n          numero: orden.numero,\n          codigo: item.codigo_producto || \"\",\n          descripcion: item.descripcion || \"\",\n          presentacion: item.presentacion || \"\",\n          cantidad: item.cantidad || \"\",\n          valor_unitario: item.precio_unitario || \"\",\n          valor_total: item.subtotal || \"\"\n        }\n      });\n    }\n  }\n}\n\nreturn out;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        576
+      ],
+      "id": "4fd98461-9fe4-44fd-82e8-e335b901edd4",
+      "name": "Organiza productos"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1M1esCkbiCX780P_QnYXeH0z2wscqEMrZHssyquCmN6w",
+          "mode": "list",
+          "cachedResultName": "RESULTADOS_EXTRACCION",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1M1esCkbiCX780P_QnYXeH0z2wscqEMrZHssyquCmN6w/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Encabezados",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1M1esCkbiCX780P_QnYXeH0z2wscqEMrZHssyquCmN6w/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "NUMERO ORDEN": "={{ $json.numero }}",
+            "FECHA ORDEN": "={{ $json.fecha_orden }}",
+            "FECHA ENTREGA": "={{ $json.fecha_entrega }}",
+            "PLAZO PAGO": "={{ $json.plazo_pago }}",
+            "NOMBRE CLIENTE": "={{ $json.proveedor_nombre }}",
+            "DIRECCION CLIENTE": "={{ $json.direccion }}",
+            "CIUDAD CLIENTE": "={{ $json.ciudad }}",
+            "NIT CLIENTE": "={{ $json.proveedor_nit }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "NUMERO ORDEN",
+              "displayName": "NUMERO ORDEN",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "FECHA ORDEN",
+              "displayName": "FECHA ORDEN",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "FECHA ENTREGA",
+              "displayName": "FECHA ENTREGA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "PLAZO PAGO",
+              "displayName": "PLAZO PAGO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "NOMBRE CLIENTE",
+              "displayName": "NOMBRE CLIENTE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "DIRECCION CLIENTE",
+              "displayName": "DIRECCION CLIENTE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CIUDAD CLIENTE",
+              "displayName": "CIUDAD CLIENTE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "NIT CLIENTE",
+              "displayName": "NIT CLIENTE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -80,
+        416
+      ],
+      "id": "b7481bc9-777b-4b78-82cf-6ae62a20ee6c",
+      "name": "Agrega datos encabezados",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RvVuNbRhT0ldXZby",
+          "name": "Google Sheets SGTECH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1M1esCkbiCX780P_QnYXeH0z2wscqEMrZHssyquCmN6w",
+          "mode": "list",
+          "cachedResultName": "RESULTADOS_EXTRACCION",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1M1esCkbiCX780P_QnYXeH0z2wscqEMrZHssyquCmN6w/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1781574660,
+          "mode": "list",
+          "cachedResultName": "Detalles",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1M1esCkbiCX780P_QnYXeH0z2wscqEMrZHssyquCmN6w/edit#gid=1781574660"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "NUMERO ORDEN": "={{ $json.numero }}",
+            "CODIGO": "={{ $json.codigo }}",
+            "DESCRIPCION": "={{ $json.descripcion }}",
+            "PRESENTACION": "={{ $json.presentacion }}",
+            "CANTIDAD": "={{ $json.cantidad }}",
+            "VALOR UNITARIO": "={{ $json.valor_unitario }}",
+            "TOTAL": "={{ $json.valor_total }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "NUMERO ORDEN",
+              "displayName": "NUMERO ORDEN",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CODIGO",
+              "displayName": "CODIGO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DESCRIPCION",
+              "displayName": "DESCRIPCION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PRESENTACION",
+              "displayName": "PRESENTACION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CANTIDAD",
+              "displayName": "CANTIDAD",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "VALOR UNITARIO",
+              "displayName": "VALOR UNITARIO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TOTAL",
+              "displayName": "TOTAL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -80,
+        576
+      ],
+      "id": "597332ba-bee8-4cfd-96d1-efbdb0611934",
+      "name": "Agrega datos detalle",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RvVuNbRhT0ldXZby",
+          "name": "Google Sheets SGTECH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "4999f552-dbe4-46cb-9df4-f9d9e12e8ebc",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2128,
+        992
+      ],
+      "id": "f857cfd7-591d-4673-b827-120242ba714f",
+      "name": "Webhook",
+      "webhookId": "4999f552-dbe4-46cb-9df4-f9d9e12e8ebc"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        432,
+        512
+      ],
+      "id": "325c5095-ec61-4963-96bc-5ea5f589e106",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "functionCode": "const triggerItems = $('Captura Correos').all();\nconst out = [];\n\nfor (const item of triggerItems) {\n  for (const [propName, bin] of Object.entries(item.binary || {})) {\n    const ext = (bin.fileExtension || '').toLowerCase();\n    const mime = (bin.mimeType || '').toLowerCase();\n\n    // Detectar PDFs o imágenes válidas\n    const isPDF = ext === 'pdf' || mime.includes('application/pdf');\n    const isImage = ['jpg', 'jpeg', 'png'].includes(ext) || mime.startsWith('image/');\n\n    if (!isPDF && !isImage) continue; // Saltar archivos que no sean PDF ni imagen\n\n    // Obtener buffer del binario\n    const buf = bin.data\n      ? Buffer.from(bin.data, 'base64')\n      : await this.helpers.getBinaryDataBuffer('Captura Correos', 0, propName);\n\n    const fileSize = buf.length;\n    const requiresOCR = fileSize > 1000000; // Heurística por tamaño > 1MB\n\n    // Preparar binario para el siguiente nodo\n    const prepared = await this.helpers.prepareBinaryData(\n      buf,\n      bin.fileName || `archivo.${ext || (isPDF ? 'pdf' : 'jpg')}`,\n      bin.mimeType || (isPDF ? 'application/pdf' : 'image/jpeg')\n    );\n\n    // Agregar salida estructurada\n    out.push({\n      json: {\n        messageId: item.json.id,\n        fileName: bin.fileName || `sin_nombre.${ext || (isPDF ? 'pdf' : 'jpg')}`,\n        fileExtension: ext || (isPDF ? 'pdf' : 'jpg'),\n        mimeType: mime || (isPDF ? 'application/pdf' : 'image/jpeg'),\n        fileSizeBytes: fileSize,\n        fileSizeKB: Math.round(fileSize / 1024),\n        fileType: isPDF ? 'pdf' : 'image',\n        requiresOCR: requiresOCR,\n        detectionMethod: 'byExtensionAndMimeType',\n        detectionConfidence: isPDF || isImage ? 'high' : 'low',\n      },\n      binary: { data: prepared },\n    });\n  }\n}\n\nreturn out;\n"
+      },
+      "id": "41034859-3d96-4c2b-9d0b-d4af0f76428e",
+      "name": "Conv. Binario1",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -1472,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nlet procesados = 0;\nlet detalles = 0;\n\nfor (const item of items) {\n  const row = item.json;\n  \n  // Detectar encabezado\n  if (row[\"NOMBRE CLIENTE\"]) {\n    procesados++;\n  }\n  \n  // Detectar detalle (ajusta según tus columnas reales de productos)\n  if (row[\"CODIGO\"] || row[\"DESCRIPCION\"]) {\n    detalles++;\n  }\n}\n\nreturn {\n  json: {\n    status: \"OK\",\n    ordenesProcesadas: procesados,\n    itemsProcesados: detalles,\n    timestamp: new Date().toISOString()\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        512
+      ],
+      "id": "06ced576-dd68-4f33-8279-bc629ea94b10",
+      "name": "Organiza salida"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        112,
+        512
+      ],
+      "id": "d5dfaa82-2812-42d3-a1e5-fdb9771a3600",
+      "name": "Agrupa Data"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "text": "Eres un asistente experto en extracción de información estructurada de órdenes de compra emitidas por la empresa farmacéutica proveedora ADIUM.\n\nRecibirás un documento que puede estar en formato PDF o imagen (fotografía o captura). \nTu tarea es **analizar tanto el contenido visual como el texto** del documento para identificar toda la información relevante, \nsin omitir ningún campo aunque el texto sea pequeño, esté en color distinto o aparezca en bordes o sellos.\n\n### Instrucciones:\n1. Analiza visualmente el documento (layout, tablas, totales) y también su texto.\n2. Devuelve ÚNICAMENTE un objeto JSON válido, sin comentarios, sin explicaciones y sin backticks.\n3. Si algún campo no existe en el documento, ponlo vacío \"\" o null (no inventes datos).\n4. Mantén los valores numéricos tal como aparecen en el documento, sin símbolos de moneda (ejemplo: \"8,869,509.00\").\n5. Los ítems de productos deben estar en un array, aunque solo haya un producto.\n6. Si la presentación no está clara, intenta inferirla de la descripción; no confundirla con nombre comercial.\n7. Respeta los nombres de campo exactamente como se listan abajo.\n8. **Importante:** ADIUM es siempre el **proveedor**, nunca el cliente.  \n   - El campo `\"nombre_empresa\"` y los datos de cliente deben corresponder al **comprador o cliente de ADIUM**, no a ADIUM.\n9. Devuelve exclusivamente el JSON, sin texto adicional ni explicaciones antes o después.\n\n### Estructura JSON a devolver:\n{\n  \"orden_compra\": {\n    \"numero\": \"\",\n    \"fecha_orden\": \"\",\n    \"fecha_entrega\": \"\",\n    \"forma_pago\": \"\",\n    \"plazo_pago\": \"\",\n    \"nombre_empresa\": \"\",\n    \"direccion_cliente\": \"\",\n    \"ciudad_comprador\": \"\",\n    \"nit_comprador\": \"\"\n  },\n  \"items\": [\n",
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1312,
+        496
+      ],
+      "id": "08e32f6c-45d6-4f0a-a889-54df90c88c9d",
+      "name": "Extrae info OC",
+      "retryOnFail": true,
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "zWpoAApyDwalRssh",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "Eres un asistente experto en extracción de información estructurada de órdenes de compra de la empresa farmacéutica proveedora ADIUM.\n\nRecibirás el texto limpio de un documento PDF de orden de compra.\n\n### Instrucciones:\n1. Devuelve ÚNICAMENTE un objeto JSON válido, sin comentarios, sin explicaciones y sin backticks.\n2. Si algún campo no existe en el documento, ponlo vacío \"\" o null (no inventes datos).\n3. Mantén los valores numéricos tal como aparecen en el documento, sin símbolos de moneda (ejemplo: \"8,869,509.00\").\n4. Los ítems de productos deben estar en un array, aunque solo haya un producto.\n5. Si la presentación no está clara, intenta inferirla de la descripción; si no existe, déjala vacía \"\".\n6. Respeta los nombres de campo exactamente como se listan abajo.\n\n### Estructura JSON a devolver:\n{\n  \"orden_compra\": {\n    \"numero\": \"\",\n    \"fecha_orden\": \"\",\n    \"fecha_entrega\": \"\",\n    \"forma_pago\": \"\",\n    \"plazo_pago\": \"\",\n    \"nombre_empresa\": \"\",\n    \"direccion_cliente\": \"\",\n    \"ciudad_comprador\": \"\",\n    \"nit_comprador\": \"\"\n  },\n  \"items\": [\n    {\n      \"codigo\": \"\",\n      \"descripcion\": \"\",\n      \"presentacion\": \"\",\n      \"cantidad\": \"\",\n      \"valor_unitario\": \"\",\n      \"valor_total\": \"\"\n    }\n  ],\n  \"totales\": {\n    \"subtotal\": \"\",\n    \"impuesto\": \"\",\n    \"descuento\": \"\",\n    \"total\": \"\",\n    \"total_letras\": \"\"\n  }\n}\n\n\n",
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -944,
+        640
+      ],
+      "id": "da0af0f7-c6dd-4d00-ba76-f0e64f75ed77",
+      "name": "Analyze 2.5 flash",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "c6L8r4wOhl65h8t1",
+          "name": "Google Gemini(PaLM) SGTECH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "const triggerItems = $('Captura Correos').all();\nconst out = [];\n\nfor (const item of triggerItems) {\n  for (const [propName, bin] of Object.entries(item.binary || {})) {\n    const ext = (bin.fileExtension || '').toLowerCase();\n    const mime = (bin.mimeType || '').toLowerCase();\n\n    // Detectar PDFs o imágenes válidas\n    const isPDF = ext === 'pdf' || mime.includes('application/pdf');\n    const isImage = ['jpg', 'jpeg', 'png'].includes(ext) || mime.startsWith('image/');\n\n    if (!isPDF && !isImage) continue; // Saltar archivos que no sean PDF ni imagen\n\n    // Obtener buffer del binario\n    const buf = bin.data\n      ? Buffer.from(bin.data, 'base64')\n      : await this.helpers.getBinaryDataBuffer('Captura Correos', 0, propName);\n\n    const fileSize = buf.length;\n    const requiresOCR = fileSize > 1000000; // Heurística por tamaño > 1MB\n\n    // Preparar binario para el siguiente nodo\n    const prepared = await this.helpers.prepareBinaryData(\n      buf,\n      bin.fileName || `archivo.${ext || (isPDF ? 'pdf' : 'jpg')}`,\n      bin.mimeType || (isPDF ? 'application/pdf' : 'image/jpeg')\n    );\n\n    // Agregar salida estructurada\n    out.push({\n      json: {\n        messageId: item.json.id,\n        fileName: bin.fileName || `sin_nombre.${ext || (isPDF ? 'pdf' : 'jpg')}`,\n        fileExtension: ext || (isPDF ? 'pdf' : 'jpg'),\n        mimeType: mime || (isPDF ? 'application/pdf' : 'image/jpeg'),\n        fileSizeBytes: fileSize,\n        fileSizeKB: Math.round(fileSize / 1024),\n        fileType: isPDF ? 'pdf' : 'image',\n        requiresOCR: requiresOCR,\n        detectionMethod: 'byExtensionAndMimeType',\n        detectionConfidence: isPDF || isImage ? 'high' : 'low',\n      },\n      binary: { data: prepared },\n    });\n  }\n}\n\nreturn out;\n"
+      },
+      "id": "e6871227-f246-4843-a67e-60c929b43466",
+      "name": "Conv. Binario",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "document",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "text": "=Eres un asistente experto en extracción de información estructurada de órdenes de compra emitidas por la empresa farmacéutica proveedora ADIUM.\n\nRecibirás el texto limpio de un cuertpo de correo donde puede estar una orden de compra.\n\n### Instrucciones:\n1. Devuelve ÚNICAMENTE un objeto JSON válido, sin comentarios, sin explicaciones y sin backticks.\n2. Si algún campo no existe en el documento, ponlo vacío \"\" o null (no inventes datos).\n3. Mantén los valores numéricos tal como aparecen en el documento, sin símbolos de moneda (ejemplo: \"8,869,509.00\").\n4. Los ítems de productos deben estar en un array, aunque solo haya un producto.\n5. Si la presentación no está clara, intenta inferirla de la descripción; no confundirla con nombre comercial\".\n6. Respeta los nombres de campo exactamente como se listan abajo.\n7. **Importante:** ADIUM es siempre el **proveedor**, nunca el cliente.  \n   - El campo `\"nombre_empresa\"` y los datos de cliente deben corresponder al **comprador o cliente de ADIUM**, no a ADIUM.\n\n### Estructura JSON a devolver:\n{\n  \"orden_compra\": {\n    \"numero\": \"\",\n    \"fecha_orden\": \"\",\n    \"fecha_entrega\": \"\",\n    \"forma_pago\": \"\",\n    \"plazo_pago\": \"\",\n    \"nombre_empresa\": \"\",\n    \"direccion_cliente\": \"\",\n    \"ciudad_comprador\": \"\",\n    \"nit_comprador\": \"\"\n  },\n  \"items\": [\n    {\n      \"codigo\": \"\",\n      \"descripcion\": \"\",\n      \"presentacion\": \"\",\n      \"cantidad\": \"\",\n      \"valor_unitario\": \"\",\n      \"valor_total\": \"\"\n    }\n  ],\n  \"totales\": {\n    \"subtotal\": \"\",\n    \"impuesto\": \"\",\n    \"descuento\": \"\",\n    \"total\": \"\",\n    \"total_letras\": \"\"\n  }\n}\ntexto->  {{ $('Captura Correos').item.json.text }}\n\nSi no es una orden de compra, coloca \"esOrdenCompra\": false y deja los demás campos vacíos.\n\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1392,
+        1008
+      ],
+      "id": "e8b1e49a-776e-44cc-8fdb-c176a1a5f7df",
+      "name": "Analyze document",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "c6L8r4wOhl65h8t1",
+          "name": "Google Gemini(PaLM) SGTECH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "46a94992-4523-424c-8a69-d646a1ecb458",
+              "leftValue": "={{\n(() => {\n  try {\n    const raw = $json[\"content\"][\"parts\"][0][\"text\"];\n    // Limpia ```json ... ```\n    const clean = raw.replace(/```json|```/g, \"\").trim();\n    const data = JSON.parse(clean);\n    return data?.orden_compra?.numero?.trim() !== \"\";\n  } catch (e) {\n    return false;\n  }\n})()\n}}",
+              "rightValue": "orden_compra",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1184,
+        1008
+      ],
+      "id": "fda2b1eb-1f94-41b6-bc41-4c457fa256de",
+      "name": "If",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "operation": "removeLabels",
+        "messageId": "={{ $('Valida PDF').item.json.messageId }}",
+        "labelIds": [
+          "Label_8709460902111807610"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -800,
+        1072
+      ],
+      "id": "1998061b-5b8d-4a16-b6bb-c4718eb91b6c",
+      "name": "Remueve de Pendientes2",
+      "webhookId": "721e3b70-8660-4a54-8d72-a7d9a25cb857",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Fgc7QFtwVXJIrozt",
+          "name": "Gmail SGTECH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $('Valida PDF').item.json.messageId }}",
+        "labelIds": [
+          "Label_722511627468745250"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -800,
+        912
+      ],
+      "id": "3ddba018-f8fa-449e-a0f6-27ae77004b96",
+      "name": "Mueve a Procesados1",
+      "webhookId": "6cc0d069-1bd6-49a5-a7ec-2c0911dca874",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Fgc7QFtwVXJIrozt",
+          "name": "Gmail SGTECH"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -592,
+        496
+      ],
+      "id": "b2194647-049d-4185-a23d-8b7f5bf5fae0",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "localhost:5678",
+            "connection": "keep-alive",
+            "content-length": "43",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+            "sec-ch-ua": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"",
+            "content-type": "application/json",
+            "sec-ch-ua-mobile": "?0",
+            "accept": "*/*",
+            "origin": "null",
+            "sec-fetch-site": "cross-site",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-dest": "empty",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "es,en-US;q=0.9,en;q=0.8,ru;q=0.7"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "force": true,
+            "origin": "launcher"
+          },
+          "webhookUrl": "http://localhost:5678/webhook/4999f552-dbe4-46cb-9df4-f9d9e12e8ebc",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Transf. Data": {
+      "main": [
+        [
+          {
+            "node": "Organiza Encabezados",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Organiza productos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Captura Correos": {
+      "main": [
+        [
+          {
+            "node": "Conteo PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conteo PDF": {
+      "main": [
+        [
+          {
+            "node": "Valida PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valida PDF": {
+      "main": [
+        [
+          {
+            "node": "Mueve a Procesados",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Remueve de Pendientes1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Conv. Binario1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Analyze document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Organiza Encabezados": {
+      "main": [
+        [
+          {
+            "node": "Agrega datos encabezados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Organiza productos": {
+      "main": [
+        [
+          {
+            "node": "Agrega datos detalle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agrega datos encabezados": {
+      "main": [
+        [
+          {
+            "node": "Agrupa Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Captura Correos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conv. Binario1": {
+      "main": [
+        [
+          {
+            "node": "Extrae info OC",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Organiza salida": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agrega datos detalle": {
+      "main": [
+        [
+          {
+            "node": "Agrupa Data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Agrupa Data": {
+      "main": [
+        [
+          {
+            "node": "Organiza salida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrae info OC": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Conv. Binario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze 2.5 flash": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conv. Binario": {
+      "main": [
+        [
+          {
+            "node": "Analyze 2.5 flash",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze document": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Mueve a Procesados1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Remueve de Pendientes2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Remueve de Pendientes",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Mueve a Descartados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Transf. Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "GJD8nRFgTwtvZOf6"
+  },
+  "versionId": "72ee81be-33c6-46c4-8d70-c5e37838645f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "64131b8660a0fc101c49c977e6d21c2e33ebb5bea307b2b26c6b5d01965f154b"
+  },
+  "id": "C3OJm358DFbT3oNW",
+  "tags": []
+}
