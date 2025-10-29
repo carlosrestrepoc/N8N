@@ -1,0 +1,895 @@
+{
+  "name": "Demo 01",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "585da927-d150-413a-a919-445e2e185faf",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "position": [
+        -688,
+        304
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "zWpoAApyDwalRssh",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "8bf2b3ca-d34e-4228-ab5a-5f7c90296564",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        -496,
+        320
+      ],
+      "typeVersion": 1.3
+    },
+    {
+      "parameters": {
+        "path": "b37ab045-0b99-4d57-af44-6ae1e9ac6381"
+      },
+      "id": "b0d65e30-b48a-470c-9dd4-d80914c1026b",
+      "name": "MCP Server Trigger",
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "position": [
+        -576,
+        496
+      ],
+      "webhookId": "b37ab045-0b99-4d57-af44-6ae1e9ac6381",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://ad5056086b7c.ngrok-free.app/mcp/b37ab045-0b99-4d57-af44-6ae1e9ac6381/sse",
+        "options": {}
+      },
+      "id": "fb526ec5-a8c7-4453-acf4-59266d494605",
+      "name": "MCP Client",
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "position": [
+        -128,
+        304
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "carlosrestrepoc@gmail.com",
+          "mode": "list",
+          "cachedResultName": "carlosrestrepoc@gmail.com"
+        },
+        "start": "={{ $fromAI('FechaInicio')}}",
+        "end": "={{ $fromAI('FechaFin')}}",
+        "additionalFields": {
+          "attendees": [
+            "={{ $fromAI('Asistentes')}}"
+          ],
+          "summary": "={{ $fromAI('Titulo')}}"
+        }
+      },
+      "id": "a805571f-1c65-437e-9bf2-fdcef06b5887",
+      "name": "Create event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "position": [
+        224,
+        544
+      ],
+      "typeVersion": 1.3,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "Jf2amDds8yCMuIaQ",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "carlosrestrepoc@gmail.com",
+          "mode": "list",
+          "cachedResultName": "carlosrestrepoc@gmail.com"
+        },
+        "eventId": "={{ $fromAI('Event_ID', ``, 'string') }}",
+        "updateFields": {}
+      },
+      "id": "587610d8-2331-466d-bc44-7f0733ec7ea1",
+      "name": "Update event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "position": [
+        -16,
+        880
+      ],
+      "typeVersion": 1.3,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "Jf2amDds8yCMuIaQ",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', `Sign off as \"Your name, company name\"`, 'string') }}",
+        "options": {}
+      },
+      "id": "cd598b41-b028-4e1f-8e61-7d704e11ab2f",
+      "name": "Draft email",
+      "type": "n8n-nodes-base.gmailTool",
+      "position": [
+        -224,
+        976
+      ],
+      "webhookId": "4e76cb3d-4239-4030-a23a-544029535f70",
+      "typeVersion": 2.1,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CqL6nv8TJOmmkCLG",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Calendar nodes\n\nYou could order your agent to create a new event in your Google Calendar, find a specific event, get multiple events or update an event's details. \n\n**The true power of these nodes regarding Email, CRM and Calendar remains in combining multiple into one set of instructions**.\n\n## Examples:\n\n- Find the contact for Jhon for A. Corp and send him an email asking saying that you have scheduled the meeting for next Wednesday at 9AM. Draft an email to remind him of the details and the topic of discussion being the weekly update call and the main company bottlenecks.\n- Update the contact details for Jhon since he changed his email and company to B corp and john[at]bcorpfakeemail[dot]com and please update me about my upcoming meetings with him next month.\n- Send me a summary for all my meetings today. Draft one email for each different person that I'll meet with today, reminding them about today's meeting\n",
+        "height": 668,
+        "width": 560,
+        "color": 5
+      },
+      "id": "6c67dd8d-b924-44df-be1b-1cab22ce265c",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        320,
+        448
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# Email nodes\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nYour AI Agent will be able to search through your email inbox to find specific email content for you. Based on this records you can fetch information quickly and order to draft responses to review later.\n\n## Examples:\n\n- hey what were the last 5 emails sent to Jon from X corp? \n- Draft an email with these details to Jon sharing I can't make it today and propose a new time for 9AM tomorrow. ",
+        "height": 500,
+        "width": 460,
+        "color": 3
+      },
+      "id": "6d2cd415-8cef-4773-8c93-7f6a931d0c12",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -608,
+        864
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# CRM nodes\n\nWith these node operations your \nAI agent will be able to do the following:\n\n- Add a new row with contact data\n- Find a row and its details in the table\n- Update a value or group of values\n\n\n## Examples:\n\n- Add a new contact data with Rick as first name\n his cell is +1 XXX XXX XXXX. \nI will tell you the email later on.\n- Can you tell me the details and email for Jon Doe?\n I want to send him an email reminder.\n- Update Rick's email to rick[at]someemail[dot]com from X corp. please.",
+        "height": 480,
+        "width": 660,
+        "color": 4
+      },
+      "id": "e5670742-cd07-4f6c-93d1-4b4c3a0c542a",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1328,
+        528
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## MCP Client\n\nPaste your MCP client URL from the MCP server trigger node.\n\nCustomize your output node to receive the workflow completion notifications (eg. Telegram, Gmail) from your personal assistant",
+        "height": 480,
+        "width": 480
+      },
+      "id": "10bb9a83-2374-43b7-a4f1-a946c6f6a60f",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -240,
+        -64
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 636,
+        "width": 400,
+        "color": 5
+      },
+      "id": "1481eeaf-011c-4b4f-a5bd-3664607524d7",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -80,
+        432
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1JDoEkNqk1c_TrIht2n1XF-jmIWpk48DP3NUaNbhcFV8",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JDoEkNqk1c_TrIht2n1XF-jmIWpk48DP3NUaNbhcFV8/edit?usp=drivesdk",
+          "cachedResultName": "Contacts"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JDoEkNqk1c_TrIht2n1XF-jmIWpk48DP3NUaNbhcFV8/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "value": {},
+          "schema": [],
+          "mappingMode": "autoMapInputData",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "7d3c4192-1ca1-4d83-b1b9-a325dbfee304",
+      "name": "Add new row",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "position": [
+        -944,
+        608
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "f9XPrCDN0i5qoh3O",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1JDoEkNqk1c_TrIht2n1XF-jmIWpk48DP3NUaNbhcFV8",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JDoEkNqk1c_TrIht2n1XF-jmIWpk48DP3NUaNbhcFV8/edit?usp=drivesdk",
+          "cachedResultName": "Contacts"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JDoEkNqk1c_TrIht2n1XF-jmIWpk48DP3NUaNbhcFV8/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "options": {}
+      },
+      "id": "29139ac1-295f-404f-87f0-ae28d404d63c",
+      "name": "Find row",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "position": [
+        -880,
+        736
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "f9XPrCDN0i5qoh3O",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1arx1L2YeKdvWwkeFQDot6SECCWg6rjfkzeed0uMRu-M",
+          "mode": "list",
+          "cachedResultName": "RESULTADOS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1arx1L2YeKdvWwkeFQDot6SECCWg6rjfkzeed0uMRu-M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1arx1L2YeKdvWwkeFQDot6SECCWg6rjfkzeed0uMRu-M/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Hacienda",
+              "displayName": "Hacienda",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Modelo",
+              "displayName": "Modelo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "0f638690-bb43-4ee7-b104-a8d5f0d8cf90",
+      "name": "Update row",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "position": [
+        -784,
+        848
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "f9XPrCDN0i5qoh3O",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', ``, 'boolean') }}",
+        "filters": {}
+      },
+      "id": "a992861d-6ca1-42c5-8d00-2616af6ec3b8",
+      "name": "Find emails",
+      "type": "n8n-nodes-base.gmailTool",
+      "position": [
+        -352,
+        992
+      ],
+      "webhookId": "b36e3112-52b1-4e03-a2d3-74d5d4705891",
+      "typeVersion": 2.1,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CqL6nv8TJOmmkCLG",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "calendar": {
+          "__rl": true,
+          "value": "carlosrestrepoc@gmail.com",
+          "mode": "list",
+          "cachedResultName": "carlosrestrepoc@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "id": "95d38680-28a4-4393-981a-a3ec2ab562f1",
+      "name": "Find single event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "position": [
+        160,
+        688
+      ],
+      "typeVersion": 1.3,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "Jf2amDds8yCMuIaQ",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "carlosrestrepoc@gmail.com",
+          "mode": "list",
+          "cachedResultName": "carlosrestrepoc@gmail.com"
+        },
+        "limit": 10,
+        "options": {}
+      },
+      "id": "6ca32987-4878-4be5-bcda-d433e1adb362",
+      "name": "Find multiple events",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "position": [
+        80,
+        784
+      ],
+      "typeVersion": 1.3,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "Jf2amDds8yCMuIaQ",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=Eres un Asistente Digital del correo personal de Carlos Antonio Restrepo Contreras. Siempre dirígete a mí como Carlos.\nLa fecha actual del sistema es {{ $now.format(\"yyyy-MM-dd\") }}. la hora actual es {{ $now.format(\"HH:mm:ss\") }}\n\nTu objetivo es ayudar a gestionar mi tiempo, correos y contactos de manera natural y clara en español, usando únicamente las herramientas que tienes disponibles.\n\nResponde según la hora actual:\n- Si una reunión ya pasó, dilo en pasado (\"tuviste...\").\n- Si está por venir, dilo en futuro (\"tienes...\").\n- Si está ocurriendo en este momento, dilo en presente (\"estás en...\").\nSi se te pide agendar una reunón antes de la hora del sistema indicar el error, tratando de corregir indicando que talvez sea para el siguiente día.\n\nHerramientas disponibles\n📅 Google Calendar\n\ncreate_event → Crear una reunión (título, fecha/hora inicio, fecha/hora fin, asistentes).\n\nupdate_event → Modificar detalles de una reunión existente.\n\nfind_event → Buscar un evento específico.\n\nfind_events → Listar eventos en un rango de fechas.\n\ndelete_event → Cancelar una reunión.\n\n📧 Gmail\n\nfind_emails → Buscar correos por asunto, remitente o fechas.\n\ndraft_email → Redactar un correo para revisión (para, asunto, mensaje).\n\nSend a message in Gmail → Redactar y enviar un correo \n\n📊 Google Sheets (Contactos y Datos)\n\nadd_row → Agregar un nuevo contacto o registro.\n\nfind_row → Buscar un contacto existente.\n\nupdate_row → Actualizar la información de un contacto.\n\nMicrosoft outlook calendar \n\nGet many events in Microsoft Outlook → Listar eventos en un rango de fechas.\n\nCreate an event in Microsoft Outlook → Crear una reunión (título, fecha/hora inicio, fecha/hora fin, asistentes).\n\nReglas de comunicación\n\nResponde siempre en lenguaje natural, nunca en JSON.\n\nMuestra reuniones en listas claras con emojis y horarios en formato 12h (con \"a.m.\" / \"p.m.\").\n\nPara correos o contactos, resume de forma breve y entendible.\n\nSi no hay datos suficientes, pide aclaración al usuario.\n\nUsa un tono cercano y profesional, como si fueras un asistente humano.\n\nEjemplos\n\nUsuario: \"Dime mis reuniones de mañana\"\nAsistente:\n\"Claro 👍, mañana tienes dos reuniones agendadas:\n\n1️⃣ Con Carlos Restrepo Contreras y Sebastian Mejía Arango, de 12:00 p.m. a 12:30 p.m.\n2️⃣ Nuevas Implementaciones, de 3:00 p.m. a 4:00 p.m. con Edwin Chica.\"\n\nUsuario: \"Mándale un correo a María con el informe de Bacatá\"\nAsistente:\n\"Perfecto 📧, redacté un correo para María con asunto Informe Bacatá y el mensaje Adjunto el informe solicitado.\""
+        }
+      },
+      "id": "a356fc18-6489-4a01-bd79-696ff029cf2b",
+      "name": "Personal Assistant",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        -560,
+        96
+      ],
+      "typeVersion": 1.9
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -608,
+        400
+      ],
+      "id": "d08fd547-b7d1-4204-8e96-a0aef11d2e45",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "jkF8n6LndDaET4KC",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        -368,
+        336
+      ],
+      "id": "f280b874-475e-4965-8d91-6edf8003287f",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "public": true,
+        "mode": "webhook",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -752,
+        96
+      ],
+      "id": "15379641-7f55-4ec5-97ff-c934664e1114",
+      "name": "When chat message received",
+      "webhookId": "8c7c5b8e-9d39-4fca-9611-65c5f98baa05"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "carlosrestrepoc@gmail.com",
+          "mode": "list",
+          "cachedResultName": "carlosrestrepoc@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "id": "9e9b4c8f-85ac-41e0-a808-71c4ed2ce38e",
+      "name": "Delete",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "position": [
+        -80,
+        992
+      ],
+      "typeVersion": 1.3,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "Jf2amDds8yCMuIaQ",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        -608,
+        960
+      ],
+      "id": "a191c448-c1a2-48b4-a528-c3266ab1f193",
+      "name": "Send a message in Gmail",
+      "webhookId": "76ced700-5334-4eed-bb10-8c4f0efc1ea7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CqL6nv8TJOmmkCLG",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toRecipients": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "bodyContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.microsoftOutlookTool",
+      "typeVersion": 2,
+      "position": [
+        -464,
+        928
+      ],
+      "id": "45f3008a-f69a-4db3-b5de-a4e46d4551c7",
+      "name": "Envia_Correo_Outlook",
+      "webhookId": "b1fb2860-5243-42bc-882c-dcebe36a60d4",
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "WAIfe7tdPPM2xgWn",
+          "name": "Microsoft Outlook account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "event",
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.microsoftOutlookTool",
+      "typeVersion": 2,
+      "position": [
+        48,
+        464
+      ],
+      "id": "5b08c37b-91bf-4a1c-bad1-c4803c1e7216",
+      "name": "Get many events in Microsoft Outlook",
+      "webhookId": "97020d9d-2f4f-4a7f-b1a5-688f22fa27b7",
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "WAIfe7tdPPM2xgWn",
+          "name": "Microsoft Outlook account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "event",
+        "operation": "create",
+        "calendarId": {
+          "__rl": true,
+          "value": "AQMkADAwATM0MDAAMi05OQBkZi02MmFmLTAwAi0wMAoARgAAA40xU_iMNvZKuqh-ve7uAHjJBwDGlg6x6xu7T4lOIzaVKtSVAAACAQYAAADGlg6x6xu7T4lOIzaVKtSVAAACSc8AAAA=",
+          "mode": "list",
+          "cachedResultName": "Calendario"
+        },
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Title', ``, 'string') }}",
+        "startDateTime": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "endDateTime": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.microsoftOutlookTool",
+      "typeVersion": 2,
+      "position": [
+        208,
+        832
+      ],
+      "id": "fb50ec77-8b92-4080-9702-bbf285a87cb1",
+      "name": "Create an event in Microsoft Outlook",
+      "webhookId": "f0fd6dc8-57e3-4cca-9448-118a6fd12e6a",
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "WAIfe7tdPPM2xgWn",
+          "name": "Microsoft Outlook account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "When chat message received": [
+      {
+        "json": {
+          "action": "sendMessage",
+          "sessionId": "a667f3e0-b922-4375-a04a-440c64b87bbb",
+          "chatInput": "Hola",
+          "metadata": {}
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Find row": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "Personal Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add new row": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Draft email": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find emails": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create event": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update event": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Personal Assistant",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find single event": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find multiple events": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Personal Assistant",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "Personal Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Personal Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Personal Assistant": {
+      "main": [
+        []
+      ]
+    },
+    "Delete": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Envia_Correo_Outlook": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events in Microsoft Outlook": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event in Microsoft Outlook": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "81b29d70-7a1e-4b51-a870-5fcc0d781872",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "64131b8660a0fc101c49c977e6d21c2e33ebb5bea307b2b26c6b5d01965f154b"
+  },
+  "id": "o2gxSQETTWt2M4xP",
+  "tags": []
+}
