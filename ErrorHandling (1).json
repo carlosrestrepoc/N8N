@@ -6,10 +6,10 @@
       "type": "n8n-nodes-base.errorTrigger",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        624,
+        336
       ],
-      "id": "6a744c40-ecc4-4cc0-b0af-395bfe22d548",
+      "id": "89efe2be-85d5-4ab1-a435-70c0be66ee2d",
       "name": "Error Trigger"
     },
     {
@@ -22,16 +22,16 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        208,
-        0
+        832,
+        336
       ],
-      "id": "7a1b4b3a-e117-49e9-bfc7-8a034d8e4f40",
+      "id": "ce3ff519-995a-4d56-b3e0-7c02116bdec7",
       "name": "Send a message",
       "webhookId": "cdbdc13d-a9f2-4a78-be50-5a7e2aeee19d",
       "credentials": {
         "gmailOAuth2": {
-          "id": "Fgc7QFtwVXJIrozt",
-          "name": "Gmail SGTECH"
+          "id": "lEn1Wk3HOBqwWAwn",
+          "name": "Gmail account"
         }
       }
     }
@@ -50,15 +50,15 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "44c2e706-dbf6-4d08-bc4b-6eb2ffbbba29",
+  "versionId": "ff8f0dc2-2ab1-4f49-8be9-5613973c8dcf",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "64131b8660a0fc101c49c977e6d21c2e33ebb5bea307b2b26c6b5d01965f154b"
+    "instanceId": "663060821d6be0edc49ba37f3934ee406411e84b3abd2007a78db8a6d47d596a"
   },
-  "id": "GJD8nRFgTwtvZOf6",
+  "id": "dAezYJN2GoU9LtO5",
   "tags": []
 }
