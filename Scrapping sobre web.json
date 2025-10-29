@@ -1,0 +1,415 @@
+{
+  "name": "Scrapping sobre web",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "479e8438-49ba-4a55-90cb-0ec8f34e7175",
+      "name": "When clicking \"Test workflow\"",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -496,
+        352
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "books",
+        "options": {}
+      },
+      "id": "ad7034a7-88bd-4d6f-87fa-aed46644818b",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        160,
+        352
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "### You need to setup Microsoft Azure credentials with Microsoft Graph permissions.",
+        "height": 184.90255200662574
+      },
+      "id": "e1d5522c-1034-43a2-b8e1-d213ee23d1f3",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1120,
+        -16
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "### Unlike Google Sheets where we did not need to have a certain format, here we need to create the column headers, otherwise the appending to the sheet won't work.",
+        "height": 183.1237982918667
+      },
+      "id": "77fec8a5-71d3-4503-9f42-1a827f53c5de",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1408,
+        -16
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "### For these steps to work you will need to have Drive, Sheets and Gmail APIs enabled in your Google Cloud Account",
+        "height": 135.09744799337426
+      },
+      "id": "ce97159c-0ec8-491a-9da7-8cbd5d2f1108",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1520,
+        640
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "books",
+              "cssSelector": "={{ $('Inicializar variables').item.json.booksContainerSelector }}",
+              "returnValue": "html",
+              "returnArray": true
+            },
+            {
+              "key": "next",
+              "cssSelector": "={{ $('Inicializar variables').item.json.nextLinkSelector }}",
+              "returnValue": "attribute",
+              "attribute": "href"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d4aa25d2-c7bb-4133-9d81-6e8321d1508f",
+      "name": "Extract all books from the page",
+      "type": "n8n-nodes-base.html",
+      "position": [
+        -16,
+        352
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "price",
+              "order": "descending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a9cf188c-c848-43d2-b3b7-2302d49583e8",
+      "name": "Sort by price",
+      "type": "n8n-nodes-base.sort",
+      "position": [
+        480,
+        352
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "dataPropertyName": "books",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "title",
+              "cssSelector": "={{ $('Inicializar variables').item.json.titleSelector }}",
+              "returnValue": "attribute",
+              "attribute": "title"
+            },
+            {
+              "key": "price",
+              "cssSelector": ".price_color"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "640db873-fe6b-481b-abdc-cc8dbd4410d6",
+      "name": "Extract individual book price",
+      "type": "n8n-nodes-base.html",
+      "position": [
+        320,
+        352
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Gt6Xl9YeMdXe3XWmLu02KeXmjVGn6Czn11ClX0mfLFM",
+          "mode": "list",
+          "cachedResultName": "EXTRACCION",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Gt6Xl9YeMdXe3XWmLu02KeXmjVGn6Czn11ClX0mfLFM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Gt6Xl9YeMdXe3XWmLu02KeXmjVGn6Czn11ClX0mfLFM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "TITLE": "={{ $json.title }}",
+            "PRICE": "={{ $json.price }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "TITLE",
+              "displayName": "TITLE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PRICE",
+              "displayName": "PRICE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "bea64dcb-3a1b-4cc3-bb37-27692044c137",
+      "name": "Save to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        640,
+        352
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RvVuNbRhT0ldXZby",
+          "name": "Google Sheets SGTECH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.baseUrl + $json.page }}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "id": "9287fffa-6702-4039-85a2-e5f205b24ce5",
+      "name": "Fetch website content",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -176,
+        352
+      ],
+      "typeVersion": 4.1
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      // 1. Configuración de URL y Paginación\n      baseUrl: 'https://books.toscrape.com/catalogue/', // La URL base del sitio\n      initialPage: 'page-1.html', // La primera página del catálogo (relativa a baseUrl)\n      \n      // 2. Selectores CSS (¡La parte más importante!)\n      // Selector del contenedor de cada ítem/producto (artículo)\n      booksContainerSelector: 'article.product_pod', \n      \n      // Selector del enlace \"siguiente página\"\n      nextLinkSelector: 'ul.pager li.next a', \n      \n      // Selectores de los datos a extraer de cada ítem\n      titleSelector: 'h3 > a',\n      priceSelector: '.price_color'\n    }\n  }\n];"
+      },
+      "id": "2d62fa47-bb48-4029-900b-d2c77e486411",
+      "name": "Inicializar variables",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -336,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Obtenemos el enlace relativo 'next' extraído por el HTML node\nconst nextRelativePage = $json.next || null;\n\n// 2. Si no hay 'next', el bucle debe parar.\nif (!nextRelativePage) {\n  console.log('🛑 No hay más páginas');\n  // Devolvemos hasNextPage: false para que el 'If' node termine el flujo\n  return [{ json: { hasNextPage: false } }]; \n}\n\n// 3. Recuperamos la 'baseUrl' CONSTANTE desde el nodo inicial.\n// Esto es robusto porque siempre apunta al mismo lugar.\nconst baseUrl = $items('Inicializar variables')[0].json.baseUrl;\n\nconsole.log(`➡️ Siguiente página encontrada: ${nextRelativePage}`);\n\n// 4. Devolvemos los datos para la *siguiente* iteración del bucle.\nreturn [\n  {\n    json: {\n      hasNextPage: true, // Sigue el bucle\n      baseUrl: baseUrl,\n      page: nextRelativePage // La URL relativa extraída (\"page-2.html\", \"index.php?page=3\", etc.)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        144
+      ],
+      "id": "3e5f4231-0dbd-4057-8b84-efb964e58faf",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bd3c0dcc-dd66-43ce-8768-f3d9f15cc094",
+              "leftValue": "={{ $json.hasNextPage }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        144
+      ],
+      "id": "3b304eed-751f-4841-9375-21156d4429e2",
+      "name": "If"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Extract individual book price",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort by price": {
+      "main": [
+        [
+          {
+            "node": "Save to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch website content": {
+      "main": [
+        [
+          {
+            "node": "Extract all books from the page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract individual book price": {
+      "main": [
+        [
+          {
+            "node": "Sort by price",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking \"Test workflow\"": {
+      "main": [
+        [
+          {
+            "node": "Inicializar variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract all books from the page": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inicializar variables": {
+      "main": [
+        [
+          {
+            "node": "Fetch website content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Google Sheets": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Fetch website content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fae5c75f-ab93-4d80-a72a-df5bb46a85f0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "64131b8660a0fc101c49c977e6d21c2e33ebb5bea307b2b26c6b5d01965f154b"
+  },
+  "id": "aKe9x1OceXhGjJsi",
+  "tags": []
+}
