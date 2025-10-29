@@ -1,0 +1,1235 @@
+{
+  "name": "Flujo Analyze Image con Plantilla",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -240,
+        144
+      ],
+      "id": "46e3b370-d2bc-4bf8-9fde-5ae4c9748547",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0Jj7KaYqHbFj2IBe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1fkTqKotjfQtuwFxoV87fn0NwksaXNC6O",
+          "mode": "list",
+          "cachedResultName": "BALANCES",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1fkTqKotjfQtuwFxoV87fn0NwksaXNC6O"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -768,
+        304
+      ],
+      "id": "1721b47f-e6f0-42aa-9f56-334e13ce5fff",
+      "name": "Valida Existencia PDF",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0Jj7KaYqHbFj2IBe",
+          "name": "Google Drive account"
+        }
+      },
+      "notes": "Inicia el proceso validando si existen datos en la carpeta del drive llamada BALANCES"
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "12JJEG_XgLiIvljbu75iF-lBOfJ5wtm0H",
+          "mode": "list",
+          "cachedResultName": "EN PROCESO",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/12JJEG_XgLiIvljbu75iF-lBOfJ5wtm0H"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -592,
+        304
+      ],
+      "id": "69407446-37c7-464e-ba8b-8f4d65f41646",
+      "name": "Mueve a EN PROCESO",
+      "retryOnFail": true,
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0Jj7KaYqHbFj2IBe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Mueve a EN PROCESO').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1dJ4spcGSbshScKGu4LEsl1F4eThUTc6b",
+          "mode": "list",
+          "cachedResultName": "PROCESADOS",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1dJ4spcGSbshScKGu4LEsl1F4eThUTc6b"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1440,
+        272
+      ],
+      "id": "ba2a33e7-7bab-4612-aeb1-79de0b590ad1",
+      "name": "Mueve a PROCESADOS",
+      "executeOnce": false,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0Jj7KaYqHbFj2IBe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Mueve a EN PROCESO').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "10T7ZZviVoTM5grWWkTBVgJFnaXvnH3ji",
+          "mode": "list",
+          "cachedResultName": "ERROR",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/10T7ZZviVoTM5grWWkTBVgJFnaXvnH3ji"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1344,
+        16
+      ],
+      "id": "a8b073a3-6206-46ab-b1d9-9b5a1e32b9e9",
+      "name": "Mueve a ERROR",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0Jj7KaYqHbFj2IBe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// 1) Toma el bloque de texto del modelo\nconst textBlock = $json?.content?.parts?.[0]?.text ?? $json?.text ?? \"\";\n\n// 2) Limpia ```json ... ``` si viene en markdown\nlet cleaned = textBlock.replace(/```json|```/gi, \"\").trim();\n\n// 3) Si aún hay ruido, extrae solo el JSON entre { ... }\nif (!(cleaned.includes(\"{\") && cleaned.includes(\"}\"))) {\n  const m = textBlock.match(/\\{[\\s\\S]*\\}/);\n  cleaned = m ? m[0] : \"\";\n}\n\n// 4) Parse seguro\nlet data;\ntry {\n  if (!cleaned) throw new Error(\"No JSON found\");\n  data = JSON.parse(cleaned);\n} catch (e) {\n  return {\n    json: {\n      hacienda: \"Desconocido\",\n      modelo: \"Desconocido\",\n      error: \"Error al parsear JSON\",\n      detalle: e.message,\n      raw: textBlock\n    }\n  };\n}\n\n// 5) Normaliza salida\nreturn {\n  json: {\n    hacienda: data.hacienda ?? \"Desconocido\",\n    modelo: data.modelo ?? \"Desconocido\"\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        816,
+        128
+      ],
+      "id": "015a4020-8910-410e-9a7b-230f3043ee62",
+      "name": "Extrae Haciend y Modelo"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "14dd0ee9-6f18-4b14-80c2-3e619b472bc8",
+              "leftValue": "={{ $json.hacienda }}",
+              "rightValue": "Desconocido",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1168,
+        128
+      ],
+      "id": "9f9100cb-e931-40ec-bb7d-0de7414ebe7c",
+      "name": "Valida si son correctos"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "14dd0ee9-6f18-4b14-80c2-3e619b472bc8",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "=",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "b38dad23-8f79-419f-842e-89be7273801f",
+              "leftValue": "={{ $('Valida Existencia PDF').item.json.mimeType }}",
+              "rightValue": "application/pdf",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -448,
+        304
+      ],
+      "id": "4e743793-c738-4478-9cfb-77e23cdc87ca",
+      "name": "Valida si es PDF"
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Mueve a EN PROCESO').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1B9ASN1TheTsiy3h4OpNTNUtb9wyI6bQa",
+          "mode": "list",
+          "cachedResultName": "DESCARTADOS",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1B9ASN1TheTsiy3h4OpNTNUtb9wyI6bQa"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -240,
+        480
+      ],
+      "id": "13ad9011-e372-43d6-bf5c-cd5b69027981",
+      "name": "Mueve a DESCARTADOS",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0Jj7KaYqHbFj2IBe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Mueve a EN PROCESO').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1CNK6X8uEX6cpVk_woJBYD4uYgYuM6c8S",
+          "mode": "list",
+          "cachedResultName": "NO PROCESADOS",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1CNK6X8uEX6cpVk_woJBYD4uYgYuM6c8S"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        512,
+        304
+      ],
+      "id": "21f52633-098b-4aa2-be96-2466db77c097",
+      "name": "Mueve a DESCARTADOS1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0Jj7KaYqHbFj2IBe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "77e08cd1-e180-4012-9c1c-7485f33abda9",
+              "leftValue": "={{ $json.content.parts[0].text }}",
+              "rightValue": "Normal",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "03f1ad75-9a93-4f89-bae4-dccf29a4e0ef",
+              "leftValue": "={{ $json.content.parts[0].text }}",
+              "rightValue": "=Abreviado",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "ad4c1bab-cb18-4349-837c-8b11e747697b",
+              "leftValue": "={{ $json.content.parts[0].text }}",
+              "rightValue": "Consolidado",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        336,
+        144
+      ],
+      "id": "6771c1b5-c3c5-41c5-8872-c48f7731ca58",
+      "name": "Valida si es balance"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Diccionario de plantillas organizado como objetos JSON reales\nconst plantillas = {\n  // === BIZKAIA ===\n  \"Bizkaia-Normal\": {\n  \"01_RAZON_SOCIAL\":0,\n  \"02_NIF\":0,\n  \"03_EJERCICIO\":0,\n  \"04_FECHA\":0,\n  \"05_PROM_EMPLEADOS_TOD_CONT_ACTUAL\":0,\n  \"103_DESARROLLO(N)\": 0,\n  \"104_CONCESIONES(N)\": 0,\n  \"105_PATENTES_LICENCIAS_MARCAS(N)\": 0,\n  \"106_FONDO_COMERCIO(N)\": 0,\n  \"107_APLICACIONES_INFORMATICAS(N)\": 0,\n  \"108_INVESTIGACION(N)\": 0,\n  \"181_PROPIEDAD_INTELECTUAL(N)\": 0,\n  \"109_OTRO_INMOVILIADO_INTANGIBLE(N)\": 0,\n  \"112_TERRENOS_CONSTRUCCIONES(N)\": 0,\n  \"113_INSTALACIONES_TECNICAS_OTRO_INMOV(N)\": 0,\n  \"114_INMOVILIZADO_CURSO_ANTICIPOS(N)\": 0,\n  \"116_TERRENOS(N)\": 0,\n  \"117_CONSTRUCCIONES(N)\": 0,\n  \"119_INSTRUMENTOS_PATRIMONIO(N)\": 0,\n  \"120_CREDITOS_EMPRESAS(N)\": 0,\n  \"121_VALORES_REPRESENTATIVOS_DEUDA(N)\": 0,\n  \"122_DERIVADOS(N)\": 0,\n  \"123_OTROS_ACTIVOS_FINANCIEROS(N)\": 0,\n  \"124_OTRAS_INVERSIONES(N)\": 0,\n  \"127_INSTRUMENTOS_PATRIMONIO(N)\": 0,\n  \"128_CREDITOS_TERCEROS(N)\": 0,\n  \"129_VALORES_REPRESENTATIVOS_DEUDA(N)\": 0,\n  \"130_DERIVADOS(N)\": 0,\n  \"131_OTROS_ACTIVOS_FINANCIEROS(N)\": 0,\n  \"132_OTRAS_INVERSIONES(N)\": 0,\n  \"134_ACTIVOS_IMPUESTOS_DIFERIDO(N)\": 0,\n  \"135_DEUDAS_COMERCIALES_NO_CORRIENTES(N)\": 0,\n  \"137_ACTIVOS_NO_CORRIENTES_VENTA(N)\": 0,\n  \"139_COMERCIALES(N)\": 0,\n  \"140_CORTO_PLAZO(N)\": 0,\n  \"142_CICLO_LARGO_PRODUCCION(N)\": 0,\n  \"143_CICLO_CORTO_PRODUCCION(N)\": 0,\n  \"145_CICLO_LARGO_PRODUCCION(N)\": 0,\n  \"146_CICLO_CORTO_PRODUCCION(N)\": 0,\n  \"147+182_SUBPRODUCTOS_RESIDUOS_MATERIALES(N)\": 0,\n  \"148_ANTICIPOS_PROVEEDORES(N)\": 0,\n  \"151_CLIENTES_VENTAS_PREST_SERV_LP(N)\": 0,\n  \"152_CLIENTES_VENTAS_PREST_SERV_CP(N)\": 0,\n  \"153_CLIENTES_EMPRESAS_GRUPO_ASOC(N)\": 0,\n  \"154_OTROS_DEUDORES(N)\": 0,\n  \"155_PERSONAL(N)\": 0,\n  \"156_ACTIVOS_IMPUESTO_CORRIENTE(N)\": 0,\n  \"157_OTROS_CREDITOS_ADMON_PUBLICAS(N)\": 0,\n  \"158_ACCIONISTAS_DESEMBOLSOS_EXIGIDOS(N)\": 0,\n  \"161_INSTRUMENTOS_PATRIMONIO(N)\": 0,\n  \"162_CREDITOS_EMPRESAS(N)\": 0,\n  \"163_VALORES_REPRESENTATIVOS_DEUDA(N)\": 0,\n  \"164_DERIVADOS(N)\": 0,\n  \"165_OTROS_ACTIVOS_FINANCIEROS(N)\": 0,\n  \"166_OTRAS_INVERSIONES(N)\": 0,\n  \"169_INSTRUMENTOS_PATRIMONIO(N)\": 0,\n  \"170_CREDITOS_EMPRESAS(N)\": 0,\n  \"171_VALORES_REPRESENTATIVOS_DEUDA(N)\": 0,\n  \"172_DERIVADOS(N)\": 0,\n  \"173_OTROS_ACTIVOS_FINANCIEROS(N)\": 0,\n  \"174_OTRAS_INVERSIONES(N)\": 0,\n  \"176_PERIODIFICACION_CP(N)\": 0,\n  \"178_TESORERIA(N)\": 0,\n  \"179_OTROS_ACTIVOS_LIQUIDOS(N)\": 0,\n  \"204_CAPITAL_ESCRITURADO(N)\": 0,\n  \"205_CAPITAL_NO_EXIGIDO(N)\": 0,\n  \"206_PRIMA_EMISION(N)\": 0,\n  \"208_LEGAL_ESTATUTARIA(N)\": 0,\n  \"209_OTRAS_RESERVAS(N)\": 0,\n  \"210_ACCIONES_PARTICIPACIONES_PROPIAS(N)\": 0,\n  \"212_REMANENTE(N)\": 0,\n  \"213_RESULTADOS_EJERCICIOS_ANTERIORES(N)\": 0,\n  \"214_OTRAS_APORTACIONES_SOCIOS(N)\": 0,\n  \"215_RESULTADO_EJERCICIO(N)\": 0,\n  \"216_DIVIDENDO_CUENTA(N)\": 0,\n  \"217_OTROS_INSTRUMENTOS_PATRIM(N)\": 0,\n  \"219_ACTIVOS_FINANCIEROS_VALOR_RAZONABLE(N)\": 0,\n  \"220_OPERACIONES_COBERTURA(N)\": 0,\n  \"221_ACTIVOS_NO_CORR_PASIVOS_VINC_VENTA(N)\": 0,\n  \"223+224_OTROS(N)\": 0,\n  \"225_SUBVENCIONES_DONACIONES_LEGADOS(N)\": 0,\n  \"228_OBLIGACIONES_PRESTACIONES_LP_PERSONAL(N)\": 0,\n  \"229_ACTUACIONES_MEDIOAMBIENTALES(N)\": 0,\n  \"230_PROVISIONES_RESTRUCTURACION(N)\": 0,\n  \"231_OTRAS_PROVISIONES(N)\": 0,\n  \"233_OBLIGACIONES_VALORES_NEGOCIABLES(N)\": 0,\n  \"234_DEUDAS_ENTIDADES_CREDITO(N)\": 0,\n  \"235_ACREEDORES_ARRENDAMIENTO_FINANCIERO(N)\": 0,\n  \"236_DERIVADOS(N)\": 0,\n  \"237_OTROS_PASIVOS_FINANCIEROS(N)\": 0,\n  \"239_DEUDAS_EMPRESAS_GRUPO_ASOC_LP(N)\": 0,\n  \"240_PASIVOS_IMPUESTO_DIFERIDO(N)\": 0,\n  \"241_PERIODIFICACIONES_LP(N)\": 0,\n  \"242_ACREEDORES_COMERCIALES_NO_CORR(N)\": 0,\n  \"243_DEUDA_CARACT_ESPECIALES_LP(N)\": 0,\n  \"245_PAS_VINC_ACTIV_NO_CORR_VENTA(N)\": 0,\n  \"269_PROVISIONES_DERECHOS_EMISION_GASES(N)\": 0,\n  \"270_OTRAS_PROVISIONES(N)\": 0,\n  \"248_OBLIGACIONES_VALORES_NEGOCIABLES(N)\": 0,\n  \"249_DEUDAS_ENTIDADES_CREDITO(N)\": 0,\n  \"250_ACREEDORES_ARRENDAMIENTO_FINANCIERO(N)\": 0,\n  \"251_DERIVADOS(N)\": 0,\n  \"252_OTROS_PASIVOS_FINANCIEROS(N)\": 0,\n  \"254_DUDAS_EMPRESAS_ASOCIADOS_CP(N)\": 0,\n  \"257_PROVEEDORES_LP(N)\": 0,\n  \"258_PROVEEDORES_CP(N)\": 0,\n  \"259_PROVEEDORES_EMPRESAS_GRUPO_ASOC(N)\": 0,\n  \"260_ACREEDORES_VARIOS(N)\": 0,\n  \"261_PERSONAL_REMUNERACIONES_PENDIENTES(N)\": 0,\n  \"262_PASIVOS_IMPUESTOS_CORRIENTES(N)\": 0,\n  \"263_OTRAS_DEUDAS_ADMON_PUBLICAS(N)\": 0,\n  \"264_ANTICIPOS_CLIENTES(N)\": 0,\n  \"266_PERIODIFICACIONES_CP(N)\": 0,\n  \"267_DEUDA_CARACT_ESPECIALES_CP(N)\": 0,\n  \"302_VENTAS(N)\": 0,\n  \"303_PRESTACIONES_SERVICIO(N)\": 0,\n  \"380_INGRESOS_CARACT_FINANCIERO_HOLDING(N)\": 0,\n  \"-304_VARIACION_EXIST_PROD_TERM_CURSO(N)\": 0,\n  \"305_TRABAJOS_REALIZADOS_EMPRESA_ACTIVO(N)\": 0,\n  \"-307_CONSUMO_MERCADERIAS(N)\": 0,\n  \"-308_CONSUMO_MATERIAS_PRIMAS(N)\": 0,\n  \"-309_TRABAJOS_REALIZADOS_OTRAS_EMPRESAS(N)\": 0,\n  \"-310_DETERIORO_MERCADERIAS_MATERIAS(N)\": 0,\n  \"312_INGRESOS_ACCESORIOS_GESTION_CORRIENTE(N)\": 0,\n  \"315_SUBVENCIONES_EXPLOTACION(N)\": 0,\n  \"-317-319-321-322_SUELDOS_SALARIOS_ASIMILADOS(N)\": 0,\n  \"-320-323_CARGAS_SOCIALES(N)\": 0,\n  \"-324_PROVISIONES(N)\": 0,\n  \"-326_SERVICIOS_EXTERIORES(N)\": 0,\n  \"-327_TRIBUTOS(N)\": 0,\n  \"-328_PERDIDAS_DETERIORO_VAR_PROV_COMERCIALES(N)\": 0,\n  \"-329_OTROS_GASTOS_GESTION_CORRIENTE(N)\": 0,\n  \"-384_GASTOS_EMISION_GASES_EFEC_INVERNADERO(N)\": 0,\n  \"-330_AMORTIZACION_INMOVILIZADO(N)\": 0,\n  \"331_IMPUTACION_SUBVENCIONES_INMOV(N)\": 0,\n  \"332_EXCESOS_PROVISIONES(N)\": 0,\n  \"334_DETERIORO_PERDIDAS(N)\": 0,\n  \"337_RESULTADOS_ENAJENACIONES_OTRAS(N)\": 0,\n  \"385_DETERIORO_RESULT_ENAJEN_INMOV_HOLDING(N)\": 0,\n  \"340_DIFERENCIA_NEGATIVA_COMBIN_NEGOCIO(N)\": 0,\n  \"341_OTROS_RESULTADOS(N)\": 0,\n  \"345_EN_EMPRESAS_GRUPO_ASOCIADOS(N)\": 0,\n  \"346_EN_TERCEROS(N)\": 0,\n  \"348_EN_EMPRESAS_GRUPO_ASOCIADOS(N)\": 0,\n  \"349_EN_TERCEROS(N)\": 0,\n  \"350_IMPUTACION_SUBVENCIONES_DONACIONES_LEGADOS(N)\": 0,\n  \"-352_POR_DEUDAS_EMPRESAS_GRUPO_ASOC(N)\": 0,\n  \"-353_POR_DEUDAS_TERCEROS(N)\": 0,\n  \"-354_POR_ACTUALIZACION_PROVISIONES(N)\": 0,\n  \"356_VALOR_RAZONABLE_CAMBIO_PYG(N)\": 0,\n  \"357_TRANSFERENCIA_AJUSTE_VALOR_RAZONABLE(N)\": 0,\n  \"358_DIFERENCIAS_CAMBIO(N)\": 0,\n  \"360_DETERIORO_PERDIDAS(N)\": 0,\n  \"365_RESULTADOS_ENAJENACIONES_OTRAS(N)\": 0,\n  \"377_INCORPORACION_ACTIVO_GASTOS_FIN(N)\": 0,\n  \"378_INGRESOS_FINANCIEROS_CONV_ACREED(N)\": 0,\n  \"379_RESTO_INGRESOS_GASTOS(N)\": 0,\n  \"-372_IMPUESTOS_BENEFICIOS(N)\": 0,\n  \"374_RESULTADO_EJERCICIO_OP_INTERRUMPIDAS(N)\": 0,\n  \"375_RESULTADO_DEL_EJERCICIO(N)\": 0\n},\n  \"Bizkaia-Abreviado\": {\n  \"01_RAZON_SOCIAL\":0,\n  \"02_NIF\":0,\n  \"03_EJERCICIO\":0,\n  \"04_FECHA\":0,\n  \"05_PROM_EMPLEADOS_TOD_CONT_ACTUAL\":0,\n  \"102_INMOVILIZADO_INTANGIBLE(N)\": 0,\n  \"111_INMOVILIZADO_MATERIAL(N)\": 0,\n  \"115_INVERSIONES_INMOBILIARIAS(N)\": 0,\n  \"118_INVERSIONES_EMPRESAS_GRUPO_ASOC_LP(N)\": 0,\n  \"126_INVERSIONES_FINANCIERAS_LP(N)\": 0,\n  \"134_ACTIVO_IMPUESTO_DIFERIDO(N)\": 0,\n  \"135_DEUDORES_COMERCIALES_NO_CORRIENTES(N)\": 0,\n  \"137_ACTIVOS_NO_CORRIENTE_VENTA(N)\": 0,\n  \"138_EXISTENCIAS(N)\": 0,\n  \"151_CLIENTES_VENTAS_PREST_SERV_LP(N)\": 0,\n  \"152_CLIENTES_VENTAS_PREST_SERV_CP(N)\": 0,\n  \"158_ACCIONISTAS_DESEMBOLSOS_EXIGIDOS(N)\": 0,\n  \"159_OTROS_DEUDORES(N)\": 0,\n  \"160_INVERSIONES_EMPRESAS_GRUPO_ASOC_CP(N)\": 0,\n  \"168_INVERSIONES_FINANCIERAS_CP(N)\": 0,\n  \"176_PERIODIFICACIONES_CP(N)\": 0,\n  \"177_EFECTIVO_ACTIVOS_LIQUIDOS(N)\": 0,\n  \"204_CAPITAL_ESCRITURADO(N)\": 0,\n  \"205_CAPITAL_NO_EXIGIDO(N)\": 0,\n  \"206_PRIMA_EMISION(N)\": 0,\n  \"207_OTRAS_RESERVAS(N)\": 0,\n  \"210_ACCIONES_PARTICIPACIONES_PROPIAS(N)\": 0,\n  \"211_RDOS_EJERCICIOS_ANTERIORES(N)\": 0,\n  \"214_OTRAS_APORTACIONES_SOCIOS(N)\": 0,\n  \"215_RESULTADO_EJERCICIO(N)\": 0,\n  \"216_DIVIDENDO_CUENTA(N)\": 0,\n  \"217_OTROS_INSTRUMENTOS_PATRIM(N)\": 0,\n  \"218+224_AJUSTES_CAMBIO_VALOR(N)\": 0,\n  \"225_SUBVENCIONES_DONACIONES_LEGADOS(N)\": 0,\n  \"227_PROVISIONES_LP(N)\": 0,\n  \"234_DEUDAS_ENTIDADES_CREDITO_LP(N)\": 0,\n  \"235_ACREEDORES_ARRENDAMIENTO_FIN_LP(N)\": 0,\n  \"238_OTRAS_DEUDAS_LP(N)\": 0,\n  \"239_DEUD_EMPRESAS_GRUPO_ASOC_LP(N)\": 0,\n  \"240_PASIVO_IMPUESTOS_DIFERIDO(N)\": 0,\n  \"241_PERIODIFICACIONES_LP(N)\": 0,\n  \"242_ACREEDORES_COMERCIALES_NO_CORRIENTES(N)\": 0,\n  \"243_DEUDA_CARACT_ESPECIALES_LP(N)\": 0,\n  \"245_PASV_VINC_ACTIV_NO_CORRIENT_VENTA(N)\": 0,\n  \"246_PROVISIONES_CP(N)\": 0,\n  \"249_DEUDAS_ENTIDADES_CREDITO_CP(N)\": 0,\n  \"250_ACREEDORES_ARRENDAMIENTO_FIN_CP(N)\": 0,\n  \"253_OTRAS_DEUDAS_LP(N)\": 0,\n  \"254_DEUDAS_EMPRESAS_GRUPO_ASOC_CP(N)\": 0,\n  \"257_PROVEEDORES_LP(N)\": 0,\n  \"258_PROVEEDORES_CP(N)\": 0,\n  \"265_OTROS_ACREEDORES(N)\": 0,\n  \"266_PERIODIFICACIONES_CP(N)\": 0,\n  \"267_DEUDA_CARACT_ESPECIALES_CP(N)\": 0,\n  \"301_IMPORTE_NETO_CIFRA_NEGOCIO(N)\": 0,\n  \"304_VARIACION_EXIST_PROD_TERM_CURSO_FAB(N)\": 0,\n  \"305_TRABAJOS_REALIZADOS_EMPRESA_ACTIVO(N)\": 0,\n  \"-306_APROVISIONAMIENTOS(N)\": 0,\n  \"311_OTROS_INGRESOS_EXPLOTACION(N)\": 0,\n  \"-316_GASTOS_PERSONAL(N)\": 0,\n  \"-325_OTROS_GASTOS_EXPLOTACION(N)\": 0,\n  \"-330_AMORTIZACION_INMOVILIZADO(N)\": 0,\n  \"331_IMPUTACION_SUBVENCIONES_INMOV_NO_FIN(N)\": 0,\n  \"332_EXCESOS_PROVISIONES(N)\": 0,\n  \"333_DETERIORO_RESULT_ENAJEN_INMOV(N)\": 0,\n  \"340_DIFERENCIA_NEGATIVA_COMBIN_NEGOCIO(N)\": 0,\n  \"341_OTROS_RESULTADOS(N)\": 0,\n  \"350_IMPUT_SUBVENCIONES_DONACIONES_LEG_FIN(N)\": 0,\n  \"344+347_OTROS_INGRESOS_FINANCIEROS(N)\": 0,\n  \"-351_GASTOS_FINANCIEROS(N)\": 0,\n  \"365_VARIACION_VALOR_RAZONABLE_INSTR_FIN(N)\": 0,\n  \"358_DIFERENCIAS_CAMBIO(N)\": 0,\n  \"359_DETERIORO_RESULT_ENAJEN_INSTR_FIN(N)\": 0,\n  \"377_INCORPORACION_ACTIVO_GASTOS_FIN(N)\": 0,\n  \"378_INGRESOS_FINANCIEROS_CONV_ACREED(N)\": 0,\n  \"379_RESTO_INGRESOS_GASTOS(N)\": 0,\n  \"-372_IMPUESTOS_BENEFICIOS(N)\": 0\n},\n  \"Bizkaia-Consolidado\": {\n  \"01_RAZON_SOCIAL\":0,\n  \"02_NIF\":0,\n  \"03_EJERCICIO\":0,\n  \"04_FECHA\":0,\n  \"05_PROM_EMPLEADOS_TOD_CONT_ACTUAL\":0,\n  \"103_FONDO_COMERCIO_CONSOLIDACION(N)\": 0,\n  \"140_INVESTIGACION(N)\": 0,\n  \"141_PROPIEDAD_INTELECTUAL(N)\": 0,\n  \"104_OTRO_INMOVILIZADO_INTANGIBLE(N)\": 0,\n  \"106_TERRENOS_CONSTRUCCIONES(N)\": 0,\n  \"107_INSTALACIONES_TECNICAS_OTRO_INMOV_MAT(N)\": 0,\n  \"108_INMOVILIZADO_CURSO_ANTICIPOS(N)\": 0,\n  \"109_INVERSIONES_INMOBILIARIAS(N)\": 0,\n  \"111_PARTICIPACIONES_PUESTAS_EQUIVALENCIA(N)\": 0,\n  \"136_CREDITOS_SOCIEDADES_PUESTAS_EQUIVALENCIA(N)\": 0,\n  \"112_OTROS_ACTIVOS_FINANCIEROS(N)\": 0,\n  \"113_INVERSIONES_FINANCIERAS_LP(N)\": 0,\n  \"116_ACTIVOS_IMPUESTO_DIFERIDO(N)\": 0,\n  \"117_DEUDORES_COMERCIALES_NO_CORRIENTES(N)\": 0,\n  \"120_ACTIVOS_NO_CORRIENTES_VENTA(N)\": 0,\n  \"121_EXISTENCIAS(N)\": 0,\n  \"123_CLIENTES_VENTAS_PREST_SERV_CP(N)\": 0,\n  \"124_SOCIEDADES_PUESTAS_EQUIVALENCIA(N)\": 0,\n  \"125_ACTIVOS_IMPUESTO_CORRIENTE(N)\": 0,\n  \"126_OTROS_DEUDORES(N)\": 0,\n  \"128_CREDITOS_EMPRESAS_PUESTAS_EQUIVALENCIA(N)\": 0,\n  \"129_OTROS_ACTIVOS_FINANCIEROS(N)\": 0,\n  \"130_INVERSIONES_FINANCIERAS_CP(N)\": 0,\n  \"133_PERIODIFICACIONES_CP(N)\": 0,\n  \"134_EFECTIVO_ACTIVOS_LIQUIDOS(N)\": 0,\n  \"249_CAPITAL_ESCRITURADO(N)\": 0,\n  \"-250_CAPITAL_NO_EXIGIDO(N)\": 0,\n  \"204_PRIMA_EMISION(N)\": 0,\n  \"205_OTRAS_RESERVAS(N)\": 0,\n  \"-210_ACC_PART_PATRIM_PROPIAS_SOC_DOMINANTE(N)\": 0,\n  \"211_OTRAS_APORTACIONES_SOCIOS(N)\": 0,\n  \"212_RDO_EJ_ATRIB_SOC_DOMINANTE(N)\": 0,\n  \"-215_DIVIDENDO_CUENTA(N)\": 0,\n  \"216_OTROS_INSTRUMENTOS_PATRIM(N)\": 0,\n  \"251_DIFERENCIA_CONVERSION(N)\": 0,\n  \"252_OTROS_AJUSTES_CAMBIO_VALOR(N)\": 0,\n  \"218_SUBVENCIONES_DONACIONES_LEGADOS(N)\": 0,\n  \"219_SOCIOS_EXTERNOS(N)\": 0,\n  \"221_PROVISIONES_LP(N)\": 0,\n  \"223_OBLIGACIONES_VALORES_NEGOCIABLES(N)\": 0,\n  \"224_DEUDAS_ENTIDADES_CREDITO(N)\": 0,\n  \"225_ACREEDORES_ARRENDAMIENTO_FINANCIERO(N)\": 0,\n  \"226_OTROS_PASIVOS_FINANCIEROS(N)\": 0,\n  \"253_DEUDAS_EMPRESAS_PUESTAS_EQUIVALENCIA(N)\": 0,\n  \"254_OTRAS_DEUDAS(N)\": 0,\n  \"228_PASIVOS_IMPUESTOS_DIFERIDO(N)\": 0,\n  \"229_PARIDOFICACIONES_LP(N)\": 0,\n  \"230_ACREEDORES_COMERCIALES_NO_CORRIENTES(N)\": 0,\n  \"231_DEUDA_CARACT_ESPECIALES_LP(N)\": 0,\n  \"233_PASIVOS_VINC_ACTIVOS_NO_CORR_VENTA(N)\": 0,\n  \"257_PROVISIONES_DERECHOS_EMISION_GASES(N)\": 0,\n  \"258_OTRAS_PROVISIONES(N)\": 0,\n  \"236_OBLIGACIONES_VALORES_NEGOCIABLES(N)\": 0,\n  \"237_DEUDAS_ENTIDADES_CREDITO(N)\": 0,\n  \"238_ACREEDORES_ARRENDAMIENTO_FINANCIERO(N)\": 0,\n  \"239_OTROS_PASIVO_FINANCIEROS(N)\": 0,\n  \"255_DEUDAS_SOCIEDADES_PUESTAS_EQUIVALENCIA(N)\": 0,\n  \"256_OTRAS_DEUDAS(N)\": 0,\n  \"242_PROVEEDORES(N)\": 0,\n  \"242_PROVEEDORES_CP(N)\": 0,\n  \"243_PROVEEDORES_EMPRESAS_PUESTAS_EQUIVALENCIA(N)\": 0,\n  \"244_PASIVOS_IMPUESTOS_CORRIENTES(N)\": 0,\n  \"245_OTROS_ACREEDORES(N)\": 0,\n  \"246_PERIODIFICACIONES_CP(N)\": 0,\n  \"247_DEUDA_CARACT_ESPECIALES_CP(N)\": 0,\n  \"302_VENTAS(N)\": 0,\n  \"303+320+391_PRESTACIONES_SERVICIO(N)\": 0,\n  \"304_VARIACION_EXISTENCIAS_PROD_TERM_CURSO_FAB(N)\": 0,\n  \"305_TRABAJOS_REALIZADOS_EMPRESA_ACTIVO(N)\": 0,\n  \"-307_CONSUMO_MERCADERIAS(N)\": 0,\n  \"-308_CONSUMO_MATERIAS_PRIMAS(N)\": 0,\n  \"-309_TRABAJOS_REALIZADOS_OTRAS_EMPRESAS(N)\": 0,\n  \"-310_DETERIORO_MERCADERIAS_MATERIAS_APROV(N)\": 0,\n  \"312_INGRESOS_ACCESORIOS_GESTION_CORRIENTE(N)\": 0,\n  \"315_SUBVENCIONES_EXPLOTACION(N)\": 0,\n  \"-317_SUELDOS_SALARIOS_ASIMILADOS(N)\": 0,\n  \"-319_CARGAS_SOCIALES(N)\": 0,\n  \"-324_PROVISIONES(N)\": 0,\n  \"-328_PERDIDAS_DETERIORO_VAR_PROV_OP_COM(N)\": 0,\n  \"-329_OTROS_GASTOS_GESTION_CORRIENTES(N)\": 0,\n  \"-395_GASTOS_EMISION_GASES_EFEC_INVERNADERO(N)\": 0,\n  \"-330_AMORTIZACION_INMOVILIZADO(N)\": 0,\n  \"331_IMPUTACION_SUBVENCIONES_INMOV_NO_FIN(N)\": 0,\n  \"332_EXCESOS_PROVISIONES(N)\": 0,\n  \"334_DETERIORO_PERDIDAS(N)\": 0,\n  \"337+396_RESULTADOS_ENAJENACIONES_OTRAS(N)\": 0,\n  \"380_RESULTADO_PERDIDA_CONTROL_DEPENDIENTE(N)\": 0,\n  \"381_RESULTADO_ATRIB_PARTICIPACION_RETENIDA(N)\": 0,\n  \"342_DIFERENCIA_NEGATIVA_COMBIN_NEGOCIOS(N)\": 0,\n  \"343_OTROS_RESULTADOS(N)\": 0,\n  \"346_PARTICIPACIONES_INSTRUMENTOS_PATRIM(N)\": 0,\n  \"349_VALORES_NEGOCIABLES_OTROS_INSTR_FIN(N)\": 0,\n  \"352_IMPUTACION_SUBVENCIONES_DONACIONES_LEG_FIN(N)\": 0,\n  \"-353_GASTOS_FINANCIEROS(N)\": 0,\n  \"358_VALOR_RAZONABLE_CAMBIO_PYG(N)\": 0,\n  \"359_TRANSFERENCIA_AJUSTE_VALOR_RAZONABLE(N)\": 0,\n  \"382_IMPUTACION_RESULT_DIFERENCIA_CONVERSION(N)\": 0,\n  \"383_OTRAS_DIFERENCIAS_CAMBIO(N)\": 0,\n  \"362_DETERIORO_PERDIDAS(N)\": 0,\n  \"367_RESULTADOS_ENAJENACIONES_OTRAS(N)\": 0,\n  \"388_INCORPORACION_ACTIVO_GASTOS_FIN(N)\": 0,\n  \"389_INGRESOS_FINANCIEROS_CONV_ACREED(N)\": 0,\n  \"390_RESTO_INGRESOS_GASTOS(N)\": 0,\n  \"384_PARTICIPACION_BENEFICIOS_SOC_PUESTAS_EQUIV(N)\": 0,\n  \"385_DETERIORO_RESULT_PERDIDA_INFLUENCIA_SOC_EQUIV(N)\": 0,\n  \"-386_DIFERENCIA_NEGATIVA_CONSOL_SOC_EQUIVALENCIA(N)\": 0,\n  \"-374_IMPUESTOS_BENEFICIOS(N)\": 0,\n  \"376_RESULTADO_EJERCICIO_OP_INTERRUMPIDAS(N)\": 0,\n  \"378_RESULTADO_ATRIB_SOC_DOMINANTE(N)\": 0,\n  \"379_RESULTADO_ATRIB_SOCIOS_EXTERNOS(N)\": 0\n},\n\n  // === ESTATAL ===\n  \"Estatal-Normal\": {\n    \"01_RAZON_SOCIAL\":0,\n    \"02_NIF\":0,\n    \"03_EJERCICIO\":0,\n    \"04_FECHA\":0,\n    \"05_PROM_EMPLEADOS_TOD_CONT_ACTUAL\":0,\n    \"103_DESARROLLO\": 0,\n    \"104_CONCESIONES\": 0,\n    \"105_PATENTES_LICENCIAS_MARCAS\": 0,\n    \"106_FONDO_COMERCIO\": 0,\n    \"107_APLICACIONES_INFORMATICAS\": 0,\n    \"108_INVESTIGACION\": 0,\n    \"181_PROPIEDAD_INTELECTUAL\": 0,\n    \"109_OTRO_INMOVILIZADO_INTANG\": 0,\n    \"112_TERRENOS_CONSTRUCCIONES\": 0,\n    \"113_INSTALACIONES_TECNICAS\": 0,\n    \"114_INMOVILIZADO_CURSO_ANTICIPOS\": 0,\n    \"116_TERRENOS\": 0,\n    \"117_CONSTRUCCIONES\": 0,\n    \"119_INSTRUMENTOS_PATRIMONIO\": 0,\n    \"120_CREDITOS_EMPRESAS\": 0,\n    \"121_VALORES_REPRESENTATIVOS_DEUDA\": 0,\n    \"122_DERIVADOS\": 0,\n    \"123_OTROS_ACTIVOS_FINANCIEROS\": 0,\n    \"124_OTRAS_INVERSIONES\": 0,\n    \"127_INSTRUMENTOS_PATRIMONIO\": 0,\n    \"128_CREDITOS_TERCEROS\": 0,\n    \"129_VALORES_REPRESENTATIVOS_DEUDA\": 0,\n    \"130_DERIVADOS\": 0,\n    \"131_OTROS_ACTIVOS_FINANCIEROS\": 0,\n    \"132_OTRAS_INVERSIONES\": 0,\n    \"134_ACTIVOS_IMPUESTOS_DIFERIDOS\": 0,\n    \"135_DEUDAS_COMERCIALES_NC\": 0,\n    \"137_ACTIVOS_NC_MANTENIDOS_VENTA\": 0,\n    \"139_COMERCIALES\": 0,\n    \"140_CORTO_PLAZO\": 0,\n    \"142_CICLO_LARGO_PRODUCCION\": 0,\n    \"143_CICLO_CORTO_PRODUCCION\": 0,\n    \"145_CICLO_LARGO_PRODUCCION\": 0,\n    \"146_CICLO_CORTO_PRODUCCION\": 0,\n    \"147+701_SUBPRODUCTOS_RESIDUOS_MATERIALES\": 0,\n    \"148_ANTICIPOS_PROVEEDORES\": 0,\n    \"151_CLIENTES_VENTAS_LP\": 0,\n    \"152_CLIENTES_VENTAS_CP\": 0,\n    \"153_CLIENTES_EMPRESAS_GRUPO\": 0,\n    \"154_OTROS_DEUDORES\": 0,\n    \"155_PERSONAL\": 0,\n    \"156_ACTIVOS_IMPUESTO_CORRIENTE\": 0,\n    \"157_CREDITOS_ADMINISTRACIONES\": 0,\n    \"158_ACCIONISTAS_DESEMBOLSOS\": 0,\n    \"161_INSTRUMENTOS_PATRIMONIO\": 0,\n    \"162_CREDITOS_EMPRESAS\": 0,\n    \"163_VALORES_REPRESENTATIVOS_DEUDA\": 0,\n    \"164_DERIVADOS\": 0,\n    \"165_OTROS_ACTIVOS_FINANCIEROS\": 0,\n    \"166_OTRAS_INVERSIONES\": 0,\n    \"169_INSTRUMENTOS_PATRIMONIO\": 0,\n    \"170_CREDITOS_EMPRESAS\": 0,\n    \"171_VALORES_REPRESENTATIVOS_DEUDA\": 0,\n    \"172_DERIVADOS\": 0,\n    \"173_OTROS_ACTIVOS_FINANCIEROS\": 0,\n    \"174_OTRAS_INVERSIONES\": 0,\n    \"176_PERIODIFICACION_CP\": 0,\n    \"178_TESORERIA\": 0,\n    \"179_OTROS_ACTIVOS_LIQUIDOS\": 0,\n    \"188_CAPITAL_ESCRITURADO\": 0,\n    \"189_CAPITAL_NO_EXIGIDO\": 0,\n    \"190_PRIMA_EMISION\": 0,\n    \"192_LEGAL_ESTATUTARIA\": 0,\n    \"193+702+1002+712_OTRAS_RESERVAS\": 0,\n    \"1001_RESERVA_CAPITALIZACION\": 0,\n    \"194_ACCIONES_PATRIMONIO_PROPIAS\": 0,\n    \"196_REMANENTE\": 0,\n    \"197_RESULTADOS_EJERCICIOS_ANTERIORES\": 0,\n    \"198_OTRAS_APORTACIONES_SOCIOS\": 0,\n    \"199_RESULTADO_EJERCICIO\": 0,\n    \"200_DIVIDENDO_CUENTA\": 0,\n    \"201_OTROS_INSTRUMENTOS_PATRIMONIO\": 0,\n    \"203_ACTIVOS_FINANCIEROS_VALOR_RAZONABLE\": 0,\n    \"204_OPERACIONES_COBERTURA\": 0,\n    \"205_ACTIVOS_PASIVOS_VINCULADOS_VENTA\": 0,\n    \"206_DIFERENCIA_CONVERSION\": 0,\n    \"207_OTROS\": 0,\n    \"209_SUBVENCIONES_DONACIONES_LEGADOS\": 0,\n    \"212_OBLIGACIONES_PRESTACIONES_PERSONAL\": 0,\n    \"213_ACTUACIONES_MEDIOAMBIENTALES\": 0,\n    \"214_PROVISIONES_RESTRUCTURACION\": 0,\n    \"215_OTRAS_PROVISIONES\": 0,\n    \"217_OBLIGACIONES_VALORES_NEGOCIABLES\": 0,\n    \"218_DEUDAS_ENTIDADES_CREDITO\": 0,\n    \"219_ACREEDORES_ARRENDAMIENTO_FINANCIERO\": 0,\n    \"220_DERIVADOS\": 0,\n    \"221_OTROS_PASIVOS_FINANCIEROS\": 0,\n    \"223_DEUDAS_EMPRESAS_GRUPO_LP\": 0,\n    \"224_PASIVOS_IMPUESTO_DIFERIDO\": 0,\n    \"225_PERIODIFICACIONES_LP\": 0,\n    \"226_ACREEDORES_COMERCIALES_NC\": 0,\n    \"227_DEUDA_CARACTERISTICAS_ESPECIALES_LP\": 0,\n    \"229_PASIVOS_VINCULADOS_ACTIVOS_NC_VENTA\": 0,\n    \"703_PROVISIONES_DERECHOS_EMISION_GEI\": 0,\n    \"704_OTRAS_PROVISIONES\": 0,\n    \"232_OBLIGACIONES_VALORES_NEGOCIABLES\": 0,\n    \"233_DEUDAS_ENTIDADES_CREDITO\": 0,\n    \"234_ACREEDORES_ARRENDAMIENTO_FINANCIERO\": 0,\n    \"235_DERIVADOS\": 0,\n    \"236_OTROS_PASIVOS_FINANCIEROS\": 0,\n    \"238_DEUDAS_EMPRESAS_ASOCIADOS_CP\": 0,\n    \"241_PROVEEDORES_LP\": 0,\n    \"242_PROVEEDORES_CP\": 0,\n    \"243_PROVEEDORES_EMPRESAS_GRUPO\": 0,\n    \"244_ACREEDORES_VARIOS\": 0,\n    \"245_PERSONAL_REMUNERACIONES\": 0,\n    \"246_PASIVOS_IMPUESTOS_CORRIENTES\": 0,\n    \"247_DEUDAS_ADMINISTRACIONES\": 0,\n    \"248_ANTICIPOS_CLIENTES\": 0,\n    \"250_PERIODIFICACIONES_CP\": 0,\n    \"251_DEUDA_CARACTERISTICAS_ESPECIALES_CP\": 0,\n    \"256_VENTAS\": 0,\n    \"257_PRESTACIONES_SERVICIO\": 0,\n    \"705_INGRESOS_FINANCIEROS_HOLDING\": 0,\n    \"258_VARIACION_EXISTENCIAS_PRODUCTOS\": 0,\n    \"259_TRABAJOS_EMPRESA_ACTIVO\": 0,\n    \"261_CONSUMO_MERCADERIAS\": 0,\n    \"262_CONSUMO_MATERIAS_PRIMAS\": 0,\n    \"263_TRABAJOS_OTRAS_EMPRESAS\": 0,\n    \"264_DETERIORO_MERCADERIAS_MATERIAS\": 0,\n    \"266_INGRESOS_ACCESORIOS\": 0,\n    \"269_SUBVENCIONES_EXPLOTACION\": 0,\n    \"271+273+275+276_SUELDOS_SALARIOS\": 0,\n    \"274+277_CARGAS_SOCIALES\": 0,\n    \"278_PROVISIONES\": 0,\n    \"280_SERVICIOS_EXTERIORES\": 0,\n    \"281_TRIBUTOS\": 0,\n    \"282_PERDIDAS_DETERIORO_PROVISIONES\": 0,\n    \"283_OTROS_GASTOS_GESTION\": 0,\n    \"709_GASTOS_EMISION_GEI\": 0,\n    \"284_AMORTIZACION_INMOVILIZADO\": 0,\n    \"285_IMPUTACION_SUBVENCIONES_INMOVILIZADO\": 0,\n    \"286_EXCESOS_PROVISIONES\": 0,\n    \"288_DETERIORO_PERDIDAS\": 0,\n    \"291_RESULTADOS_ENAJENACIONES\": 0,\n    \"710_DETERIORO_ENAJENACIONES_HOLDING\": 0,\n    \"294_DIFERENCIA_NEGATIVA_COMBINACIONES\": 0,\n    \"295_OTROS_RESULTADOS\": 0,\n    \"299_EMPRESAS_GRUPO_ASOCIADOS\": 0,\n    \"300_TERCEROS\": 0,\n    \"302_EMPRESAS_GRUPO_ASOCIADOS\": 0,\n    \"303_TERCEROS\": 0,\n    \"304_IMPUTACION_SUBVENCIONES_FINANCIERAS\": 0,\n    \"306_DEUDAS_EMPRESAS_GRUPO\": 0,\n    \"307_DEUDAS_TERCEROS\": 0,\n    \"308_ACTUALIZACION_PROVISIONES\": 0,\n    \"310_VALOR_RAZONABLE_CAMBIO_RESULTADO\": 0,\n    \"311_TRANSFERENCIA_AJUSTE_VALOR_RAZONABLE\": 0,\n    \"312_DIFERENCIAS_CAMBIO\": 0,\n    \"314_DETERIORO_PERDIDAS\": 0,\n    \"319_RESULTADOS_ENAJENACIONES\": 0,\n    \"330_INCORPORACION_ACTIVO_GASTOS_FINANCIEROS\": 0,\n    \"331_INGRESOS_FINANCIEROS_CONVENIOS_ACREEDORES\": 0,\n    \"332_RESTO_INGRESOS_GASTOS\": 0,\n    \"326_IMPUESTOS_BENEFICIOS\": 0,\n    \"328_RESULTADO_OPERACIONES_INTERRUMPIDAS\": 0,\n    \"500_RESULTADO_EJERCICIO\": 0\n  },\n  \"Estatal-Abreviado\": {\n    \"01_RAZON_SOCIAL\":0,\n    \"02_NIF\":0,\n    \"03_EJERCICIO\":0,\n    \"04_FECHA\":0,\n    \"05_PROM_EMPLEADOS_TOD_CONT_ACTUAL\":0,\n    \"102_INMOVILIZADO_INTANG\": 0,\n    \"111_INMOVILIZADO_MATERIAL\": 0,\n    \"115_INVERSIONES_INMOB\": 0,\n    \"118_INV_EMPRESAS_GRUPO_ASOC_LP\": 0,\n    \"126_INV_FINANCIERAS_LP\": 0,\n    \"134_ACTIVO_IMP_DIFERIDO\": 0,\n    \"135_DEUDORES_COMERCIALES_NC\": 0,\n    \"137_ACTIVOS_NC_MANTENIDOS_VENTA\": 0,\n    \"138_EXISTENCIAS\": 0,\n    \"151_CLIENTES_VENTAS_LP\": 0,\n    \"152_CLIENTES_VENTAS_CP\": 0,\n    \"158_ACCIONISTAS_DESEMBOLSOS\": 0,\n    \"159_OTROS_DEUDORES\": 0,\n    \"160_INV_EMPRESAS_GRUPO_ASOC_CP\": 0,\n    \"168_INV_FINANCIERAS_CP\": 0,\n    \"176_PERIODIFICACIONES_CP\": 0,\n    \"177_EFECTIVO_ACTIVOS_LIQUIDOS\": 0,\n    \"188_CAPITAL_ESCRITURADO\": 0,\n    \"189_CAPITAL_NO_EXIGIDO\": 0,\n    \"190_PRIMA_EMISION\": 0,\n    \"193+1001+1002+712_OTRAS_RESERVAS\": 0,\n    \"194_ACCIONES_PATRIM_PROPIO\": 0,\n    \"195_RDOS_EJERC_ANTERIORES\": 0,\n    \"198_OTRAS_APORT_SOCIOS\": 0,\n    \"199_RESULTADO_EJERCICIO\": 0,\n    \"200_DIVIDENDO_CUENTA\": 0,\n    \"201_OTROS_INSTR_PATRIM\": 0,\n    \"202+208_AJUSTES_CAMBIO_VALOR\": 0,\n    \"209_SUBV_DONACIONES_LEGADOS\": 0,\n    \"211_PROVISIONES_LP\": 0,\n    \"218_DEUDAS_ENT_CREDITO_LP\": 0,\n    \"219_ACREEDORES_ARR_FINAN_LP\": 0,\n    \"222_OTRAS_DEUDAS_LP\": 0,\n    \"223_DEUDAS_EMPRESAS_GRUPO_LP\": 0,\n    \"224_PASIVO_IMP_DIFERIDO\": 0,\n    \"225_PERIODIFICACIONES_LP\": 0,\n    \"226_ACREEDORES_COMERCIALES_NC\": 0,\n    \"227_DEUDA_CARACT_ESP_LP\": 0,\n    \"229_PASIVO_VINC_ACTIVOS_NC_VENTA\": 0,\n    \"230_PROVISIONES_CP\": 0,\n    \"233_DEUDAS_ENT_CREDITO_CP\": 0,\n    \"234_ACREEDORES_ARR_FINAN_CP\": 0,\n    \"237_OTRAS_DEUDAS_CP\": 0,\n    \"238_DEUDAS_EMPRESAS_GRUPO_CP\": 0,\n    \"241_PROVEEDORES_LP\": 0,\n    \"242_PROVEEDORES_CP\": 0,\n    \"249_OTROS_ACREEDORES\": 0,\n    \"250_PERIODIFICACIONES_CP\": 0,\n    \"251_DEUDA_CARACT_ESP_CP\": 0,\n    \"255_IMPORTE_NETO_CIFRA_NEGOCIO\": 0,\n    \"258_VAR_EXIST_PROD_TERM_CURSO_FAB\": 0,\n    \"259_TRABAJOS_EMPRESA_ACTIVO\": 0,\n    \"260_APROVISIONAMIENTOS\": 0,\n    \"265_OTROS_INGRESOS_EXPLOT\": 0,\n    \"270_GASTOS_PERSONAL\": 0,\n    \"279_OTROS_GASTOS_EXPLOT\": 0,\n    \"284_AMORTIZACION_INMOVILIZADO\": 0,\n    \"285_IMPUT_SUBV_INMOV_NO_FINAN\": 0,\n    \"286_EXCESOS_PROVISIONES\": 0,\n    \"287_DETERIORO_ENAJEN_INMOV\": 0,\n    \"294_DIF_NEG_COMBIN_NEGOCIO\": 0,\n    \"295_OTROS_RESULTADOS\": 0,\n    \"304_IMPUT_SUBV_FINANCIERAS\": 0,\n    \"298+301_OTROS_INGRESOS_FINAN\": 0,\n    \"305_GASTOS_FINANCIEROS\": 0,\n    \"309_VAR_VALOR_RAZONABLE_INSTR_FIN\": 0,\n    \"312_DIFERENCIAS_CAMBIO\": 0,\n    \"313_DETERIORO_ENAJEN_INSTR_FIN\": 0,\n    \"330_INCORP_ACTIVO_GASTOS_FINAN\": 0,\n    \"331_INGRESOS_FINAN_CONV_ACREED\": 0,\n    \"332_RESTO_INGRESOS_GASTOS\": 0,\n    \"326_IMPUESTOS_BENEFICIOS\": 0\n  },\n  \"Estatal-Consolidado\": {\n  \"01_RAZON_SOCIAL\":0,\n  \"02_NIF\":0,\n  \"03_EJERCICIO\":0,\n  \"04_FECHA\":0,\n  \"05_PROM_EMPLEADOS_TOD_CONT_ACTUAL\":0,\n  \"106_FONDO_COMERCIO_CONSOLIDACION\": 0,\n  \"734_INVESTIGACION\": 0,\n  \"700_PROPIEDAD_INTELECTUAL\": 0,\n  \"110_OTRO_INMOVILIZADO_INTANGIBLE\": 0,\n  \"112_TERRENOS_CONSTRUCCIONES\": 0,\n  \"113_INSTALACIONES_TECNICAS_OTRO_INMOVILIZADO_MATERIAL\": 0,\n  \"114_INMOVILIZADO_CURSO_ANTICIPOS\": 0,\n  \"115_INVERSIONES_INMOBILIARIAS\": 0,\n  \"119+125_OTRAS_INVERSIONES\": 0,\n  \"126_INVERSIONES_FINANCIERAS_LARGO_PLAZO\": 0,\n  \"134_ACTIVOS_IMPUESTO_DIFERIDO\": 0,\n  \"135_DEUDORES_COMERCIALES_NO_CORRIENTES\": 0,\n  \"137_ACTIVOS_NO_CORRIENTES_MANTENIDOS_VENTA\": 0,\n  \"138_EXISTENCIAS\": 0,\n  \"150_CLIENTES_VENTAS_PRESTACIONES_SERVICIOS_CORTO_PLAZO\": 0,\n  \"156_ACTIVOS_IMPUESTO_CORRIENTE\": 0,\n  \"159_OTROS_DEUDORES\": 0,\n  \"161+167_OTRAS_INVERSIONES\": 0,\n  \"168_INVERSIONES_FINANCIERAS_CORTO_PLAZO\": 0,\n  \"176_PERIODIFICACIONES_CORTO_PLAZO\": 0,\n  \"177_EFECTIVO_OTROS_ACTIVOS_LIQUIDOS_EQUIVALENTES\": 0,\n  \"188_CAPITAL_ESCRITURADO\": 0,\n  \"189_CAPITAL_NO_EXIGIDO\": 0,\n  \"190_PRIMA_EMISION\": 0,\n  \"702_RESERVAS_REVALORIZACION\": 0,\n  \"752_RESERVAS_CAPITALIZACION\": 0,\n  \"3+750+753+764_OTRAS_RESERVAS\": 0,\n  \"194_ACC_PART_PATRIMONIO_PROPIAS_SOC_DOMINANTE\": 0,\n  \"198_OTRAS_APORTACIONES_SOCIOS\": 0,\n  \"199_RDO_EJ_ATRIBUIDO_SOCIEDAD_DOMINANTE\": 0,\n  \"200_DIVIDENDO_CUENTA\": 0,\n  \"201_OTROS_INSTRUMENTOS_PATRIMONIO\": 0,\n  \"202_OTROS_AJUSTES_CAMBIO_VALOR\": 0,\n  \"209_SUBVENCIONES_DONACIONES_LEGADOS_RECIBIDOS\": 0,\n  \"236_SOCIOS_EXTERNOS\": 0,\n  \"211_PROVISIONES_LARGO_PLAZO\": 0,\n  \"217_OBLIGACIONES_OTROS_VALORES_NEGOCIABLES\": 0,\n  \"218_DEUDAS_ENTIDADES_CREDITO\": 0,\n  \"219_ACREEDORES_ARRENDAMIENTO_FINANCIERO\": 0,\n  \"222_OTROS_PASIVOS_FINANCIEROS\": 0,\n  \"223_OTRAS_DEUDAS\": 0,\n  \"224_PASIVOS_IMPUESTOS_DIFERIDO\": 0,\n  \"225_PARIDOFICACIONES_LARGO_PLAZO\": 0,\n  \"226_ACREEDORES_COMERCIALES_NO_CORRIENTES\": 0,\n  \"227_DEUDA_CARACTERISTICAS_ESPECIALES_LARGO_PLAZO\": 0,\n  \"229_PASIVOS_VINCULADOS_ACTIVOS_NO_CORRIENTES_MANT_VENTA\": 0,\n  \"735_PROVISIONES_DERECHOS_EMISION_GASES_EFECTO_INVERNADERO\": 0,\n  \"736_OTRAS_PROVISIONES\": 0,\n  \"232_OBLIGACIONES_OTROS_VALORES_NEGOCIABLES\": 0,\n  \"233_DEUDAS_ENTIDADES_CREDITO\": 0,\n  \"234_ACREEDORES_ARRENDAMIENTO_FINANCIERO\": 0,\n  \"237_OTROS_PASIVO_FINANCIEROS\": 0,\n  \"238_OTRAS_DEUDAS\": 0,\n  \"240_PROVEEDORES\": 0,\n  \"240_PROVEEDORES_CORTO_PLAZO\": 0,\n  \"246_PASIVOS_IMPUESTOS_CORRIENTES\": 0,\n  \"249_OTROS_ACREEDORES\": 0,\n  \"250_PERIODIFICACIONES_CORTO_PLAZO\": 0,\n  \"251_DEUDA_CARACTERISTICAS_ESPECIALES_CORTO_PLAZO\": 0,\n  \"256_VENTAS\": 0,\n  \"257+4+705_PRESTACIONES_SERVICIO\": 0,\n  \"258_VARIACION_EXISTENCIAS_PRODUCTOS_TERMINADOS_CURSO_FABRICACION\": 0,\n  \"259_TRABAJOS_REALIZADOS_EMPRESA_ACTIVO\": 0,\n  \"261_CONSUMO_MERCADERIAS\": 0,\n  \"262_CONSUMO_MATERIAS_PRIMAS_OTRAS_MATERIAS_CONSUMIBLES\": 0,\n  \"263_TRABAJOS_REALIZADOS_OTRAS_EMPRESAS\": 0,\n  \"264_DETERIORO_MERCADERIAS_MATERIAS_PRIMAS_OTROS_APROVISIONAMIENTOS\": 0,\n  \"266_INGRESOS_ACCESORIOS_OTROS_GESTION_CORRIENTE\": 0,\n  \"269_SUBVENCIONES_EXPLOTACION_INCORPORADAS_RESULTADO_EJERCICIO\": 0,\n  \"271+273+275+276_SUELDOS_SALARIOS_ASIMILADOS\": 0,\n  \"27+274+277_CARGAS_SOCIALES\": 0,\n  \"278_PROVISIONES\": 0,\n  \"282_PERDIDAS_DETERIORO_VARIACION_PROVISIONES_OPERACIONES_COMERCIALES\": 0,\n  \"765+767+282_OTROS_GASTOS_GESTION_CORRIENTES\": 0,\n  \"709_GASTOS_EMISION_GASES_EFECTO_INVERNADERO\": 0,\n  \"284_AMORTIZACION_INMOVILIZADO\": 0,\n  \"285_IMPUTACION_SUBVENCIONES_INMOVILIZADO_NO_FINANCIERO_OTRAS\": 0,\n  \"286_EXCESOS_PROVISIONES\": 0,\n  \"288_DETERIORO_PERDIDAS\": 0,\n  \"291_RESULTADOS_ENAJENACIONES_OTRAS\": 0,\n  \"329_RESULTADO_PERDIDA_CONTROL_DEPENDIENTE\": 0,\n  \"330_RESULTADOS_ATRIBUIDO_PARTICIPACION_RETENIDA\": 0,\n  \"294_DIFERENCIA_NEGATIVA_COMBINACIONES_NEGOCIOS\": 0,\n  \"295_OTROS_RESULTADOS\": 0,\n  \"298_PARTICIPACIONES_INSTRUMENTOS_PATRIMONIO\": 0,\n  \"301_VALORES_NEGOCIABLES_OTROS_INSTRUMENTOS_FINANCIEROS\": 0,\n  \"304_IMPUTACION_SUBVENCIONES_DONACIONES_LEGADOS_CARACTER_FINANCIERO\": 0,\n  \"305_GASTOS_FINANCIEROS\": 0,\n  \"310_VALOR_RAZONABLE_CAMBIOS_PERDIDAS_GANANCIAS\": 0,\n  \"311_TRANSFERENCIA_AJUSTE_VALOR_RAZONABLE_CAMBIOS_PATRIMONIO_NETO\": 0,\n  \"312_OTRAS_DIFERENCIAS_CAMBIO\": 0,\n  \"314_DETERIORO_PERDIDAS\": 0,\n  \"319_RESULTADOS_ENAJENACIONES_OTRAS\": 0,\n  \"361_INCORPORACION_ACTIVO_GASTOS_FINANCIEROS\": 0,\n  \"362_INGRESOS_FINANCIEROS_DERIVADOS_CONVENIOS_ACREEDORES\": 0,\n  \"363_RESTO_INGRESOS_GASTOS\": 0,\n  \"326_IMPUESTOS_BENEFICIOS\": 0,\n  \"328_RESULTADO_EJERCICIO_PROCEDENTE_OPERACIONES_INTERRUMPIDAS_NETO_IMPUESTOS\": 0,\n  \"247_RESULTADO_ATRIBUIDO_SOCIEDAD_DOMINANTE\": 0,\n  \"248_RESULTADO_ATRIBUIDO_SOCIOS_EXTERNOS\": 0\n},\n\n  // === GIPUZKOA ===\n  \"Gipuzkoa-Normal\": {\n  \"01_RAZON_SOCIAL\":0,\n  \"02_NIF\":0,\n  \"03_EJERCICIO\":0,\n  \"04_FECHA\":0,\n  \"05_PROM_EMPLEADOS_TOD_CONT_ACTUAL\":0,\n  \"103_DESARROLLO\": 0,\n  \"104_CONCESIONES\": 0,\n  \"105_PATENTES_LICENCIAS_MARCAS_SIMILARES\": 0,\n  \"106_FONDO_COMERCIO\": 0,\n  \"107_APLICACIONES_INFORMATICAS\": 0,\n  \"108_INVESTIGACION\": 0,\n  \"181_PROPIEDAD_INTELECTUAL\": 0,\n  \"109_OTRO_INMOV_INTANGIBLE\": 0,\n  \"112_TERRENOS_CONSTRUCCIONES\": 0,\n  \"113_INSTAL_TECN_OTRO_INMOV_MAT\": 0,\n  \"114_INMOV_CURSO_ANTICIPOS\": 0,\n  \"116_TERRENOS\": 0,\n  \"117_CONSTRUCCIONES\": 0,\n  \"119_INSTR_PATRIM\": 0,\n  \"120_CREDITOS_EMPRESAS\": 0,\n  \"121_VALORES_REPR_DEUDA\": 0,\n  \"122_DERIVADOS\": 0,\n  \"123_OTROS_ACT_FINAN\": 0,\n  \"124_OTRAS_INVERSIONES\": 0,\n  \"127_INSTR_PATRIM\": 0,\n  \"128_CREDITOS_TERCEROS\": 0,\n  \"129_VALORES_REPR_DEUDA\": 0,\n  \"130_DERIVADOS\": 0,\n  \"131_OTROS_ACT_FINAN\": 0,\n  \"132_OTRAS_INVERSIONES\": 0,\n  \"134_ACTIVOS_IMP_DIFERIDO\": 0,\n  \"135_DEUDAS_COM_NO_CORR\": 0,\n  \"137_ACTIVOS_NO_CORR_MANT_VENTA\": 0,\n  \"139_COMERCIALES\": 0,\n  \"140_CORTO_PLAZO\": 0,\n  \"142_CICLO_LARGO_PRODUCC\": 0,\n  \"143_CICLO_CORTO_PRODUCC\": 0,\n  \"145_CICLO_LARGO_PRODUCC\": 0,\n  \"146_CICLO_CORTO_PRODUCC\": 0,\n  \"147+182_SUBPRODUCTOS_RESID_MAT_RECUP\": 0,\n  \"148_ANTICIPOS_PROVEEDORES\": 0,\n  \"151_CLIENTES_VENTAS_SERV_LP\": 0,\n  \"152_CLIENTES_VENTAS_SERV_CP\": 0,\n  \"153_CLIENTES_EMP_GRUPO_ASOC\": 0,\n  \"154_OTROS_DEUDORES\": 0,\n  \"155_PERSONAL\": 0,\n  \"156_ACTIVOS_IMP_CORRIENTE\": 0,\n  \"157_OTROS_CREDITOS_ADM_PUB\": 0,\n  \"158_ACCIONISTAS_DESEMB_EXIG\": 0,\n  \"161_INSTR_PATRIM\": 0,\n  \"162_CREDITOS_EMPRESAS\": 0,\n  \"163_VALORES_REPR_DEUDA\": 0,\n  \"164_DERIVADOS\": 0,\n  \"165_OTROS_ACT_FINAN\": 0,\n  \"166_OTRAS_INVERSIONES\": 0,\n  \"169_INSTR_PATRIM\": 0,\n  \"170_CREDITOS_EMPRESAS\": 0,\n  \"171_VALORES_REPR_DEUDA\": 0,\n  \"172_DERIVADOS\": 0,\n  \"173_OTROS_ACT_FINAN\": 0,\n  \"174_OTRAS_INVERSIONES\": 0,\n  \"176_PERIODIF_CORTO_PLAZO\": 0,\n  \"178_TESORERIA\": 0,\n  \"179_OTROS_ACT_LIQUIDOS\": 0,\n  \"204_CAPITAL_ESCRITURADO\": 0,\n  \"205_CAPITAL_NO_EXIGIDO\": 0,\n  \"206_PRIMA_EMISION\": 0,\n  \"208_LEGAL_ESTATUTARIA\": 0,\n  \"209_OTRAS_RESERVAS\": 0,\n  \"210_ACC_PART_PATRIM_PROPIAS\": 0,\n  \"212_REMANENTE\": 0,\n  \"213_RESULT_EJERC_ANTERIORES\": 0,\n  \"214_OTRAS_APORT_SOCIOS\": 0,\n  \"215_RESULTADO_EJERCICIO\": 0,\n  \"216_DIVIDENDO_CUENTA\": 0,\n  \"217_OTROS_INSTR_PATRIM\": 0,\n  \"219_ACT_FINAN_VALOR_RAZONABLE\": 0,\n  \"220_OPERACIONES_COBERTURA\": 0,\n  \"221_ACT_NO_CORR_PAS_VINC_MANT_VENTA\": 0,\n  \"223+224_OTROS\": 0,\n  \"225_SUBV_DON_LEG_RECIB\": 0,\n  \"228_OBLIG_PREST_LP_PERSONAL\": 0,\n  \"229_ACTUACIONES_MEDIOAMBIENTALES\": 0,\n  \"230_PROV_RESTRUCTURACION\": 0,\n  \"231_OTRAS_PROVISIONES\": 0,\n  \"233_OBLIG_VALORES_NEGOC\": 0,\n  \"234_DEUDAS_ENT_CREDITO\": 0,\n  \"235_ACREED_ARR_FINAN\": 0,\n  \"236_DERIVADOS\": 0,\n  \"237_OTROS_PAS_FINAN\": 0,\n  \"239_DEUDAS_EMP_GRUPO_ASOC_LP\": 0,\n  \"240_PASIVOS_IMP_DIFERIDO\": 0,\n  \"241_PERIODIF_LARGO_PLAZO\": 0,\n  \"242_ACREED_COM_NO_CORR\": 0,\n  \"243_DEUDA_CARACT_ESP_LP\": 0,\n  \"245_PAS_VINC_ACT_NO_CORR_MANT_VENTA\": 0,\n  \"269_PROV_EMISION_GASES\": 0,\n  \"270_OTRAS_PROVISIONES\": 0,\n  \"248_OBLIG_VALORES_NEGOC\": 0,\n  \"249_DEUDAS_ENT_CREDITO\": 0,\n  \"250_ACREED_ARR_FINAN\": 0,\n  \"251_DERIVADOS\": 0,\n  \"252_OTROS_PAS_FINAN\": 0,\n  \"254_DEUDAS_EMP_ASOC_CP\": 0,\n  \"257_PROVEEDORES_LP\": 0,\n  \"258_PROVEEDORES_CP\": 0,\n  \"259_PROVEEDORES_EMP_GRUPO_ASOC\": 0,\n  \"260_ACREEDORES_VARIOS\": 0,\n  \"261_PERSONAL_REMUN_PEND\": 0,\n  \"262_PASIVOS_IMP_CORRIENTES\": 0,\n  \"263_OTRAS_DEUDAS_ADM_PUB\": 0,\n  \"264_ANTICIPOS_CLIENTES\": 0,\n  \"266_PERIODIF_CORTO_PLAZO\": 0,\n  \"267_DEUDA_CARACT_ESP_CP\": 0,\n  \"302_VENTAS\": 0,\n  \"303_PRESTACIONES_SERVICIO\": 0,\n  \"380_INGRESOS_FINAN_HOLDING\": 0,\n  \"-304_VAR_EXIST_PROD_TERM\": 0,\n  \"305_TRAB_EMP_ACTIVO\": 0,\n  \"-307_CONSUMO_MERCADERIAS\": 0,\n  \"-308_CONSUMO_MAT_PRIMAS\": 0,\n  \"-309_TRAB_OTRAS_EMP\": 0,\n  \"-310_DETERIORO_MERC_MAT_PRIM\": 0,\n  \"312_INGRESOS_ACCESORIOS\": 0,\n  \"315_SUBV_EXPLOT_INCORP_RESULT\": 0,\n  \"-317-319-321-322_SUELDOS_SALARIOS\": 0,\n  \"-320-323_CARGAS_SOCIALES\": 0,\n  \"-324_PROVISIONES\": 0,\n  \"-326_SERVICIOS_EXTERIORES\": 0,\n  \"-327_TRIBUTOS\": 0,\n  \"-328_PERD_DETER_VAR_PROV_OP_COM\": 0,\n  \"-329_OTROS_GASTOS_GESTION\": 0,\n  \"-384_GASTOS_EMISION_GASES\": 0,\n  \"-330_AMORT_INMOVILIZADO\": 0,\n  \"331_IMPUT_SUBV_INMOV\": 0,\n  \"332_EXCESOS_PROVISIONES\": 0,\n  \"334_DETERIORO_PERDIDAS\": 0,\n  \"337_RESULT_ENAJENACIONES_OTRAS\": 0,\n  \"385_DETER_RES_ENAJ_INMOV_HOLDING\": 0,\n  \"340_DIF_NEG_COMB_NEG\": 0,\n  \"341_OTROS_RESULTADOS\": 0,\n  \"345_EN_EMP_GRUPO_ASOC\": 0,\n  \"346_EN_TERCEROS\": 0,\n  \"348_EN_EMP_GRUPO_ASOC\": 0,\n  \"349_EN_TERCEROS\": 0,\n  \"350_IMPUT_SUBV_DON_LEG_FIN\": 0,\n  \"-352_POR_DEUDAS_EMP_GRUPO_ASOC\": 0,\n  \"-353_POR_DEUDAS_TERCEROS\": 0,\n  \"-354_POR_ACTUALIZ_PROV\": 0,\n  \"356_VALOR_RAZONABLE_CAMB_RES\": 0,\n  \"357_TRANSF_AJUSTE_VALOR_RAZONABLE\": 0,\n  \"358_DIFERENCIAS_CAMBIO\": 0,\n  \"360_DETERIORO_PERDIDAS\": 0,\n  \"365_RESULT_ENAJENACIONES_OTRAS\": 0,\n  \"377_INCORP_ACT_GAST_FIN\": 0,\n  \"378_ING_FIN_DERIV_CONV_ACREED\": 0,\n  \"379_RESTO_ING_GAST\": 0,\n  \"372_IMPUESTOS_BENEFICIOS\": 0,\n  \"374_RESULT_OP_INTERR_NETO_IMP\": 0,\n  \"375_RESULTADO_EJERCICIO\": 0\n},\n  \"Gipuzkoa-Abreviado\": {\n  \"01_RAZON_SOCIAL\":0,\n  \"02_NIF\":0,\n  \"03_EJERCICIO\":0,\n  \"04_FECHA\":0,\n  \"05_PROM_EMPLEADOS_TOD_CONT_ACTUAL\":0,\n  \"102_INMOV_INTANGIBLE\": 0,\n  \"111_INMOV_MATERIAL\": 0,\n  \"115_INVERSIONES_INMOB\": 0,\n  \"118_INV_EMP_GRUPO_ASOC_LP\": 0,\n  \"126_INV_FINAN_LARGO_PLAZO\": 0,\n  \"134_ACTIVO_IMP_DIFERIDO\": 0,\n  \"135_DEUD_COM_NO_CORR\": 0,\n  \"137_ACTIVOS_NO_CORR_MANT_VENTA\": 0,\n  \"138_EXISTENCIAS\": 0,\n  \"149_DEUD_COM_OTRAS_CTAS_COBRAR\": 0,\n  \"150_CLIENTES_VENTAS_SERVICIOS\": 0,\n  \"151_CLIENTES_VENTAS_SERV_LP\": 0,\n  \"152_CLIENTES_VENTAS_SERV_CP\": 0,\n  \"158_ACCIONISTAS_DESEMB_EXIG\": 0,\n  \"159_OTROS_DEUDORES\": 0,\n  \"160_INV_EMP_GRUPO_ASOC_CP\": 0,\n  \"168_INV_FINAN_CORTO_PLAZO\": 0,\n  \"176_PERIODIF_CORTO_PLAZO\": 0,\n  \"177_EFECTIVO_ACT_LIQUIDOS\": 0,\n  \"180_TOTAL_ACTIVO\": 0,\n  \"201_PATRIMONIO_NETO\": 0,\n  \"202_FONDOS_PROPIOS\": 0,\n  \"203_CAPITAL\": 0,\n  \"204_CAPITAL_ESCRITURADO\": 0,\n  \"-205_CAPITAL_NO_EXIGIDO\": 0,\n  \"206_PRIMA_EMISION\": 0,\n  \"207_RESERVAS\": 0,\n  \"207_OTRAS_RESERVAS\": 0,\n  \"210_ACC_PART_PATRIM_PROPIAS\": 0,\n  \"211_RDOS_EJERC_ANTERIORES\": 0,\n  \"214_OTRAS_APORT_SOCIOS\": 0,\n  \"215_RESULTADO_EJERCICIO\": 0,\n  \"216_DIVIDENDO_CUENTA\": 0,\n  \"217_OTROS_INSTR_PATRIM\": 0,\n  \"218+224_AJUSTES_CAMBIO_VALOR\": 0,\n  \"225_SUBV_DON_LEG_RECIB\": 0,\n  \"226_PASIVO_NO_CORRIENTE\": 0,\n  \"227_PROVISIONES_LARGO_PLAZO\": 0,\n  \"232_DEUDAS_LARGO_PLAZO\": 0,\n  \"234_DEUDAS_ENT_CREDITO_LP\": 0,\n  \"235_ACREED_ARR_FINAN_LP\": 0,\n  \"238_OTRAS_DEUDAS_LP\": 0,\n  \"239_DEUD_EMP_GRUPO_ASOC_LP\": 0,\n  \"240_PASIVO_IMP_DIFERIDO\": 0,\n  \"241_PERIODIF_LARGO_PLAZO\": 0,\n  \"242_ACREED_COM_NO_CORR\": 0,\n  \"243_DEUDA_CARACT_ESP_LP\": 0,\n  \"244_PASIVO_CORRIENTE\": 0,\n  \"245_PASIV_VINC_ACT_NO_CORR\": 0,\n  \"246_PROVISIONES_CORTO_PLAZO\": 0,\n  \"247_DEUDAS_CORTO_PLAZO\": 0,\n  \"249_DEUDAS_ENT_CREDITO_CP\": 0,\n  \"250_ACREED_ARR_FINAN_CP\": 0,\n  \"253_OTRAS_DEUDAS_LP\": 0,\n  \"254_DEUD_EMP_GRUPO_ASOC_CP\": 0,\n  \"255_ACREED_COM_OTRAS_CTAS_PAGAR\": 0,\n  \"256_PROVEEDORES\": 0,\n  \"257_PROVEEDORES_LARGO_PLAZO\": 0,\n  \"258_PROVEEDORES_CORTO_PLAZO\": 0,\n  \"265_OTROS_ACREEDORES\": 0,\n  \"266_PERIODIF_CORTO_PLAZO\": 0,\n  \"267_DEUDA_CARACT_ESP_CP\": 0,\n  \"268_TOTAL_PATRIM_PASIVO\": 0,\n  \"301_CIFRA_NEGOCIO\": 0,\n  \"304_VAR_EXIST_PROD_TERM\": 0,\n  \"305_TRAB_EMP_ACTIVO\": 0,\n  \"-306_APROVISIONAMIENTOS\": 0,\n  \"311_OTROS_INGRESOS_EXPLOT\": 0,\n  \"-316_GASTOS_PERSONAL\": 0,\n  \"-325_OTROS_GASTOS_EXPLOT\": 0,\n  \"-330_AMORT_INMOVILIZADO\": 0,\n  \"331_IMPUT_SUBV_INMOV\": 0,\n  \"332_EXCESOS_PROVISIONES\": 0,\n  \"333_DETER_RES_ENAJ_INMOV\": 0,\n  \"340_DIF_NEG_COMB_NEG\": 0,\n  \"341_OTROS_RESULTADOS\": 0,\n  \"342_RESULTADO_EXPLOTACION\": 0,\n  \"343_INGRESOS_FINANCIEROS\": 0,\n  \"350_IMPUT_SUBV_DON_LEG_FIN\": 0,\n  \"344+347_OTROS_INGRESOS_FIN\": 0,\n  \"-351_GASTOS_FINANCIEROS\": 0,\n  \"355_VAR_VALOR_RAZ_INSTR_FIN\": 0,\n  \"358_DIFERENCIAS_CAMBIO\": 0,\n  \"359_DETER_RES_ENAJ_INSTR_FIN\": 0,\n  \"376_OTROS_ING_GAST_FIN\": 0,\n  \"377_INCORP_ACT_GAST_FIN\": 0,\n  \"378_ING_FIN_DERIV_CONV_ACREED\": 0,\n  \"379_RESTO_ING_GAST\": 0,\n  \"370_RESULTADO_FINANCIERO\": 0,\n  \"371_RESULTADO_ANTES_IMPUESTOS\": 0,\n  \"372_IMPUESTOS_BENEFICIOS\": 0,\n  \"375_RESULTADO_EJERCICIO\": 0\n},\n  \"Gipuzkoa-Consolidado\": {\n    \"01_RAZON_SOCIAL\":0,\n    \"02_NIF\":0,\n    \"03_EJERCICIO\":0,\n    \"04_FECHA\":0,\n    \"05_PROM_EMPLEADOS_TOD_CONT_ACTUAL\":0,\n    \"103_FONDO_COMERCIO_CONSOLIDACION\": 0,\n    \"140_INVESTIGACION\": 0,\n    \"141_PROPIEDAD_INTELECTUAL\": 0,\n    \"104_OTRO_INMOV_INTANGIBLE\": 0,\n    \"106_TERRENOS_CONSTRUCCIONES\": 0,\n    \"107_INSTAL_TECN_OTRO_INMOV_MAT\": 0,\n    \"108_INMOV_CURSO_ANTICIPOS\": 0,\n    \"109_INVERSIONES_INMOBILIARIAS\": 0,\n    \"111_PARTICIPACIONES_PUESTAS_EQUIVALENCIA\": 0,\n    \"136_CREDITOS_SOCIEDADES_PUESTAS_EQUIVALENCIA\": 0,\n    \"112_OTROS_ACT_FINANCIEROS\": 0,\n    \"113_INVERSIONES_FINANCIERAS_LP\": 0,\n    \"116_ACTIVOS_IMPUESTO_DIFERIDO\": 0,\n    \"117_DEUDORES_COMERCIALES_NO_CORRIENTES\": 0,\n    \"120_ACTIVOS_NO_CORR_MANT_VENTA\": 0,\n    \"121_EXISTENCIAS\": 0,\n    \"123_CLIENTES_VENTAS_SERVICIOS_CP\": 0,\n    \"124_SOCIEDADES_PUESTAS_EQUIVALENCIA\": 0,\n    \"125_ACTIVOS_IMPUESTO_CORRIENTE\": 0,\n    \"126_OTROS_DEUDORES\": 0,\n    \"128_CREDITOS_EMPRESAS_PUESTAS_EQUIVALENCIA\": 0,\n    \"129_OTROS_ACT_FINANCIEROS\": 0,\n    \"130_INVERSIONES_FINANCIERAS_CP\": 0,\n    \"133_PERIODIFICACIONES_CP\": 0,\n    \"134_EFECTIVO_ACT_LIQUIDOS_EQUIV\": 0,\n    \"249_CAPITAL_ESCRITURADO\": 0,\n    \"-250_CAPITAL_NO_EXIGIDO\": 0,\n    \"204_PRIMA_EMISION\": 0,\n    \"205_OTRAS_RESERVAS\": 0,\n    \"-210_ACC_PART_PATRIM_PROPIAS_SOC_DOMINANTE\": 0,\n    \"211_OTRAS_APORTACIONES_SOCIOS\": 0,\n    \"212_RDO_EJ_ATRIB_SOC_DOMINANTE\": 0,\n    \"-215_DIVIDENDO_CUENTA\": 0,\n    \"216_OTROS_INSTR_PATRIM\": 0,\n    \"251_DIFERENCIA_CONVERSION\": 0,\n    \"252_OTROS_AJUSTES_CAMBIO_VALOR\": 0,\n    \"218_SUBV_DON_LEG_RECIBIDOS\": 0,\n    \"219_SOCIOS_EXTERNOS\": 0,\n    \"221_PROVISIONES_LP\": 0,\n    \"223_OBLIG_VALORES_NEGOCIABLES\": 0,\n    \"224_DEUDAS_ENT_CREDITO\": 0,\n    \"225_ACREED_ARR_FINANCIERO\": 0,\n    \"226_OTROS_PAS_FINANCIEROS\": 0,\n    \"253_DEUDAS_EMPRESAS_PUESTAS_EQUIVALENCIA\": 0,\n    \"254_OTRAS_DEUDAS\": 0,\n    \"228_PASIVOS_IMPUESTO_DIFERIDO\": 0,\n    \"229_PERIODIFICACIONES_LP\": 0,\n    \"230_ACREED_COMERCIALES_NO_CORRIENTES\": 0,\n    \"231_DEUDA_CARACT_ESPECIALES_LP\": 0,\n    \"233_PAS_VINC_ACT_NO_CORR_MANT_VENTA\": 0,\n    \"257_PROV_EMISION_GASES_EFECTO_INVERNADERO\": 0,\n    \"258_OTRAS_PROVISIONES\": 0,\n    \"236_OBLIG_VALORES_NEGOCIABLES\": 0,\n    \"237_DEUDAS_ENT_CREDITO\": 0,\n    \"238_ACREED_ARR_FINANCIERO\": 0,\n    \"239_OTROS_PAS_FINANCIEROS\": 0,\n    \"255_DEUDAS_SOCIEDADES_PUESTAS_EQUIVALENCIA\": 0,\n    \"256_OTRAS_DEUDAS\": 0,\n    \"242_PROVEEDORES\": 0,\n    \"242_PROVEEDORES_CP\": 0,\n    \"243_PROVEEDORES_EMPRESAS_PUESTAS_EQUIVALENCIA\": 0,\n    \"244_PASIVOS_IMPUESTOS_CORRIENTES\": 0,\n    \"245_OTROS_ACREEDORES\": 0,\n    \"246_PERIODIFICACIONES_CP\": 0,\n    \"247_DEUDA_CARACT_ESPECIALES_CP\": 0,\n    \"302_VENTAS\": 0,\n    \"303+320+391_PRESTACIONES_SERVICIO\": 0,\n    \"304_VAR_EXIST_PROD_TERM_CURSO_FABRIC\": 0,\n    \"305_TRAB_EMPRESA_PARA_ACTIVO\": 0,\n    \"-307_CONSUMO_MERCADERIAS\": 0,\n    \"-308_CONSUMO_MAT_PRIMAS_OTRAS_MAT\": 0,\n    \"-309_TRAB_REALIZ_OTRAS_EMPRESAS\": 0,\n    \"-310_DETERIORO_MERC_MAT_PRIM_APROV\": 0,\n    \"312_INGRESOS_ACCESORIOS_GESTION_CORRIENTE\": 0,\n    \"315_SUBV_EXPLOT_INCORP_RESULT_EJERC\": 0,\n    \"-317_SUELDOS_SALARIOS_ASIMILADOS\": 0,\n    \"-319_CARGAS_SOCIALES\": 0,\n    \"-324_PROVISIONES\": 0,\n    \"-328_PERD_DETER_VAR_PROV_OP_COM\": 0,\n    \"-329_OTROS_GASTOS_GESTION_CORRIENTE\": 0,\n    \"-395_GASTOS_EMISION_GASES_EFECTO_INVERNADERO\": 0,\n    \"-330_AMORT_INMOVILIZADO\": 0,\n    \"331_IMPUT_SUBV_INMOV_NO_FINAN_OTRAS\": 0,\n    \"332_EXCESOS_PROVISIONES\": 0,\n    \"334_DETERIORO_PERDIDAS\": 0,\n    \"337_RESULT_ENAJENACIONES_OTRAS\": 0,\n    \"380_RESULT_PERDIDA_CONTROL_DEPENDIENTE\": 0,\n    \"381_RESULT_ATRIB_PARTICIPACION_RETENIDA\": 0,\n    \"342_DIF_NEG_COMB_NEGOCIOS\": 0,\n    \"343_OTROS_RESULTADOS\": 0,\n    \"346_PARTICIPACIONES_INSTR_PATRIM\": 0,\n    \"349_VALORES_NEGOC_OTROS_INSTR_FINAN\": 0,\n    \"352_IMPUT_SUBV_DON_LEG_CARACT_FINAN\": 0,\n    \"-353_GASTOS_FINANCIEROS\": 0,\n    \"358_VALOR_RAZONABLE_CAMB_RES\": 0,\n    \"359_TRANSF_AJUSTE_VALOR_RAZONABLE\": 0,\n    \"382_IMPUT_RESULT_EJERC_DIF_CONVERSION\": 0,\n    \"383_OTRAS_DIFERENCIAS_CAMBIO\": 0,\n    \"362_DETERIORO_PERDIDAS\": 0,\n    \"367_RESULT_ENAJENACIONES_OTRAS\": 0,\n    \"388_INCORP_ACT_GAST_FINANCIEROS\": 0,\n    \"389_ING_FIN_DERIV_CONV_ACREEDORES\": 0,\n    \"390_RESTO_ING_GAST\": 0,\n    \"384_PARTICIP_BENEF_PERD_SOC_PUESTAS_EQUIV\": 0,\n    \"385_DETER_RES_PERD_INFL_SIGN_PART_PUESTAS_EQUIV\": 0,\n    \"-386_DIF_NEG_CONSOL_SOC_EQUIVALENCIA\": 0,\n    \"-374_IMPUESTOS_BENEFICIOS\": 0,\n    \"376_RESULT_OP_INTERR_NETO_IMP\": 0,\n    \"378_RESULT_ATRIB_SOC_DOMINANTE\": 0,\n    \"379_RESULT_ATRIB_SOCIOS_EXTERNOS\": 0\n  },\n\n  // === ALAVA ===\n  \"Álava-Normal\": {\n  \"01_RAZON_SOCIAL\":0,\n  \"02_NIF\":0,\n  \"03_EJERCICIO\":0,\n  \"04_FECHA\":0,\n  \"05_PROM_EMPLEADOS_TOD_CONT_ACTUAL\":0,\n  \"103_DESARROLLO\": 0,\n  \"104_CONCESIONES\": 0,\n  \"105_PATENTES_LICENCIAS_MARCAS\": 0,\n  \"106_FONDO_COMERCIO\": 0,\n  \"107_APLICACIONES_INFORMATICAS\": 0,\n  \"108_INVESTIGACION\": 0,\n  \"181_PROPIEDAD_INTELECTUAL\": 0,\n  \"109_OTRO_INMOVILIZADO_INTANGIBLE\": 0,\n  \"112_TERRENOS_CONSTRUCCIONES\": 0,\n  \"113_INSTALACIONES_TECNICAS\": 0,\n  \"114_INMOVILIZADO_CURSO_ANTICIPOS\": 0,\n  \"116_TERRENOS\": 0,\n  \"117_CONSTRUCCIONES\": 0,\n  \"119_INSTRUMENTOS_PATRIMONIO\": 0,\n  \"120_CREDITOS_EMPRESAS\": 0,\n  \"121_VALORES_REPRESENTATIVOS_DEUDA\": 0,\n  \"122_DERIVADOS\": 0,\n  \"123_OTROS_ACTIVOS_FINANCIEROS\": 0,\n  \"124_OTRAS_INVERSIONES\": 0,\n  \"127_INSTRUMENTOS_PATRIMONIO\": 0,\n  \"128_CREDITOS_TERCEROS\": 0,\n  \"129_VALORES_REPRESENTATIVOS_DEUDA\": 0,\n  \"130_DERIVADOS\": 0,\n  \"131_OTROS_ACTIVOS_FINANCIEROS\": 0,\n  \"132_OTRAS_INVERSIONES\": 0,\n  \"134_ACTIVOS_IMPUESTOS_DIFERIDOS\": 0,\n  \"135_DEUDAS_COMERCIALES_NC\": 0,\n  \"137_ACTIVOS_NO_CORRIENTES_VENTA\": 0,\n  \"139_COMERCIALES\": 0,\n  \"140_CORTO_PLAZO\": 0,\n  \"142_CICLO_LARGO_PRODUCCION\": 0,\n  \"143_CICLO_CORTO_PRODUCCION\": 0,\n  \"145_CICLO_LARGO_PRODUCCION\": 0,\n  \"146_CICLO_CORTO_PRODUCCION\": 0,\n  \"147+182_SUBPRODUCTOS_RESIDUOS_MATERIALES\": 0,\n  \"148_ANTICIPOS_PROVEEDORES\": 0,\n  \"151_CLIENTES_VENTAS_SERVICIOS_LP\": 0,\n  \"152_CLIENTES_VENTAS_SERVICIOS_CP\": 0,\n  \"153_CLIENTES_EMPRESAS_GRUPO_ASOCIADAS\": 0,\n  \"154_OTROS_DEUDORES\": 0,\n  \"155_PERSONAL\": 0,\n  \"156_ACTIVOS_IMPUESTO_CORRIENTE\": 0,\n  \"157_OTROS_CREDITOS_ADMINISTRACIONES\": 0,\n  \"158_ACCIONISTAS_DESEMBOLSOS\": 0,\n  \"161_INSTRUMENTOS_PATRIMONIO\": 0,\n  \"162_CREDITOS_EMPRESAS\": 0,\n  \"163_VALORES_REPRESENTATIVOS_DEUDA\": 0,\n  \"164_DERIVADOS\": 0,\n  \"165_OTROS_ACTIVOS_FINANCIEROS\": 0,\n  \"166_OTRAS_INVERSIONES\": 0,\n  \"169_INSTRUMENTOS_PATRIMONIO\": 0,\n  \"170_CREDITOS_EMPRESAS\": 0,\n  \"171_VALORES_REPRESENTATIVOS_DEUDA\": 0,\n  \"172_DERIVADOS\": 0,\n  \"173_OTROS_ACTIVOS_FINANCIEROS\": 0,\n  \"174_OTRAS_INVERSIONES\": 0,\n  \"176_PERIODIFICACION_CORTO_PLAZO\": 0,\n  \"178_TESORERIA\": 0,\n  \"179_OTROS_ACTIVOS_LIQUIDOS\": 0,\n  \"204_CAPITAL_ESCRITURADO\": 0,\n  \"-205_CAPITAL_NO_EXIGIDO\": 0,\n  \"206_PRIMA_EMISION\": 0,\n  \"208_LEGAL_ESTATUTARIA\": 0,\n  \"209_OTRAS_RESERVAS\": 0,\n  \"-210_ACCIONES_PARTICIPACIONES_PROPIAS\": 0,\n  \"212_REMANENTE\": 0,\n  \"-213_RESULTADOS_EJERCICIOS_ANTERIORES\": 0,\n  \"214_OTRAS_APORTACIONES_SOCIOS\": 0,\n  \"215_RESULTADO_EJERCICIO\": 0,\n  \"-216_DIVIDENDO_CUENTA\": 0,\n  \"217_OTROS_INSTRUMENTOS_PATRIMONIO\": 0,\n  \"219_ACTIVOS_FINANCIEROS_VALOR_RAZONABLE\": 0,\n  \"220_OPERACIONES_COBERTURA\": 0,\n  \"221_ACTIVOS_NO_CORRIENTES_PASIVOS_VINCULADOS\": 0,\n  \"223+224_OTROS\": 0,\n  \"225_SUBVENCIONES_DONACIONES_LEGADOS\": 0,\n  \"228_OBLIGACIONES_PRESTACIONES_PERSONAL\": 0,\n  \"229_ACTUACIONES_MEDIOAMBIENTALES\": 0,\n  \"230_PROVISIONES_RESTRUCTURACION\": 0,\n  \"231_OTRAS_PROVISIONES\": 0,\n  \"233_OBLIGACIONES_VALORES_NEGOCIABLES\": 0,\n  \"234_DEUDAS_ENTIDADES_CREDITO\": 0,\n  \"235_ACREEDORES_ARRENDAMIENTO_FINANCIERO\": 0,\n  \"236_DERIVADOS\": 0,\n  \"237_OTROS_PASIVOS_FINANCIEROS\": 0,\n  \"239_DEUDAS_EMPRESAS_GRUPO_ASOC_LP\": 0,\n  \"240_PASIVOS_IMPUESTO_DIFERIDO\": 0,\n  \"241_PERIODIFICACIONES_LP\": 0,\n  \"242_ACREEDORES_COMERCIALES_NC\": 0,\n  \"243_DEUDA_CARACTERISTICAS_ESPECIALES_LP\": 0,\n  \"245_PASIVOS_VINCULADOS_ACTIVOS_NO_CORRIENTES\": 0,\n  \"269_PROVISIONES_DERECHOS_EMISION_GEI\": 0,\n  \"270_OTRAS_PROVISIONES\": 0,\n  \"248_OBLIGACIONES_VALORES_NEGOCIABLES\": 0,\n  \"249_DEUDAS_ENTIDADES_CREDITO\": 0,\n  \"250_ACREEDORES_ARRENDAMIENTO_FINANCIERO\": 0,\n  \"251_DERIVADOS\": 0,\n  \"252_OTROS_PASIVOS_FINANCIEROS\": 0,\n  \"254_DEUDAS_EMPRESAS_ASOCIADAS_CP\": 0,\n  \"257_PROVEEDORES_LP\": 0,\n  \"258_PROVEEDORES_CP\": 0,\n  \"259_PROVEEDORES_EMPRESAS_GRUPO_ASOCIADAS\": 0,\n  \"260_ACREEDORES_VARIOS\": 0,\n  \"261_PERSONAL_REMUNERACIONES_PENDIENTES\": 0,\n  \"262_PASIVOS_IMPUESTOS_CORRIENTES\": 0,\n  \"263_OTRAS_DEUDAS_ADMINISTRACIONES\": 0,\n  \"264_ANTICIPOS_CLIENTES\": 0,\n  \"266_PERIODIFICACIONES_CP\": 0,\n  \"267_DEUDA_CARACTERISTICAS_ESPECIALES_CP\": 0,\n  \"302_VENTAS\": 0,\n  \"303_PRESTACIONES_SERVICIO\": 0,\n  \"380_INGRESOS_FINANCIEROS_SOCIEDADES_HOLDING\": 0,\n  \"-304_VARIACION_EXISTENCIAS_PRODUCTOS\": 0,\n  \"305_TRABAJOS_EMPRESA_ACTIVO\": 0,\n  \"-307_CONSUMO_MERCADERIAS\": 0,\n  \"-308_CONSUMO_MATERIAS_PRIMAS\": 0,\n  \"-309_TRABAJOS_OTRAS_EMPRESAS\": 0,\n  \"-310_DETERIORO_MERCADERIAS_MATERIAS_PRIMAS\": 0,\n  \"312_INGRESOS_ACCESORIOS_GESTION\": 0,\n  \"315_SUBVENCIONES_EXPLOTACION\": 0,\n  \"-317-319-321-322_SUELDOS_SALARIOS_ASIMILADOS\": 0,\n  \"-320-323_CARGAS_SOCIALES\": 0,\n  \"-324_PROVISIONES\": 0,\n  \"-326_SERVICIOS_EXTERIORES\": 0,\n  \"-327_TRIBUTOS\": 0,\n  \"-328_PERDIDAS_DETERIORO_PROVISIONES\": 0,\n  \"-329_OTROS_GASTOS_GESTION\": 0,\n  \"-384_GASTOS_EMISION_GEI\": 0,\n  \"-330_AMORTIZACION_INMOVILIZADO\": 0,\n  \"331_IMPUTACION_SUBVENCIONES\": 0,\n  \"332_EXCESOS_PROVISIONES\": 0,\n  \"334_DETERIORO_PERDIDAS\": 0,\n  \"337_RESULTADOS_ENAJENACIONES\": 0,\n  \"385_DETERIORO_ENAJENACIONES_SOCIEDADES_HOLDING\": 0,\n  \"340_DIFERENCIA_NEGATIVA_COMBINACIONES\": 0,\n  \"341_OTROS_RESULTADOS\": 0,\n  \"345_EMPRESAS_GRUPO_ASOCIADOS\": 0,\n  \"346_TERCEROS\": 0,\n  \"348_EMPRESAS_GRUPO_ASOCIADOS\": 0,\n  \"349_TERCEROS\": 0,\n  \"350_IMPUTACION_SUBVENCIONES_FINANCIERAS\": 0,\n  \"-352_DEUDAS_EMPRESAS_GRUPO_ASOCIADOS\": 0,\n  \"-353_DEUDAS_TERCEROS\": 0,\n  \"-354_ACTUALIZACION_PROVISIONES\": 0,\n  \"356_VALOR_RAZONABLE_CAMBIOS_PYG\": 0,\n  \"357_TRANSFERENCIA_AJUSTE_VALOR_RAZONABLE\": 0,\n  \"358_DIFERENCIAS_CAMBIO\": 0,\n  \"360_DETERIORO_PERDIDAS\": 0,\n  \"365_RESULTADOS_ENAJENACIONES\": 0,\n  \"377_INCORPORACION_GASTOS_FINANCIEROS\": 0,\n  \"378_INGRESOS_FINANCIEROS_CONVENIOS_ACREEDORES\": 0,\n  \"379_RESTO_INGRESOS_GASTOS\": 0,\n  \"-372_IMPUESTOS_BENEFICIOS\": 0,\n  \"374_RESULTADO_EJERCICIO_OPERACIONES_INTERRUMPIDAS\": 0,\n  \"375_RESULTADO_EJERCICIO\": 0\n},\n  \"Álava-Abreviado\":{\n  \"01_RAZON_SOCIAL\":0,\n  \"02_NIF\":0,\n  \"03_EJERCICIO\":0,\n  \"04_FECHA\":0,\n  \"05_PROM_EMPLEADOS_TOD_CONT_ACTUAL\":0,\n  \"102_INMOVILIZADO_INTANGIBLE\": 0,\n  \"111_INMOVILIZADO_MATERIAL\": 0,\n  \"115_INVERSIONES_INMOBILIARIAS\": 0,\n  \"118_INVERSIONES_EMPRESAS_GRUPO_ASOC_LP\": 0,\n  \"126_INVERSIONES_FINANCIERAS_LP\": 0,\n  \"134_ACTIVO_IMPUESTO_DIFERIDO\": 0,\n  \"135_DEUDORES_COMERCIALES_NC\": 0,\n  \"137_ACTIVO_NO_CORRIENTE_VENTA\": 0,\n  \"138_EXISTENCIAS\": 0,\n  \"151_CLIENTES_VENTAS_SERVICIOS_LP\": 0,\n  \"152_CLIENTES_VENTAS_SERVICIOS_CP\": 0,\n  \"158_ACCIONISTAS_DESEMBOLSOS\": 0,\n  \"159_OTROS_DEUDORES\": 0,\n  \"160_INVERSIONES_EMPRESAS_GRUPO_ASOC_CP\": 0,\n  \"168_INVERSIONES_FINANCIERAS_CP\": 0,\n  \"176_PERIODIFICACIONES_CP\": 0,\n  \"177_EFECTIVO_ACTIVOS_LIQUIDOS\": 0,\n  \"204_CAPITAL_ESCRITURADO\": 0,\n  \"-205_CAPITAL_NO_EXIGIDO\": 0,\n  \"206_PRIMA_EMISION\": 0,\n  \"207_OTRAS_RESERVAS\": 0,\n  \"-210_ACCIONES_PARTICIPACIONES_PROPIAS\": 0,\n  \"211_RESULTADOS_EJERCICIOS_ANTERIORES\": 0,\n  \"214_OTRAS_APORTACIONES_SOCIOS\": 0,\n  \"215_RESULTADO_EJERCICIO\": 0,\n  \"-216_DIVIDENDO_CUENTA\": 0,\n  \"217_OTROS_INSTRUMENTOS_PATRIMONIO\": 0,\n  \"218+224_AJUSTES_CAMBIO_VALOR\": 0,\n  \"225_SUBVENCIONES_DONACIONES_LEGADOS\": 0,\n  \"227_PROVISIONES_LP\": 0,\n  \"234_DEUDAS_ENTIDADES_CREDITO_LP\": 0,\n  \"235_ACREEDORES_ARRENDAMIENTO_LP\": 0,\n  \"238_OTRAS_DEUDAS_LP\": 0,\n  \"239_DEUDAS_EMPRESAS_GRUPO_ASOC_LP\": 0,\n  \"240_PASIVO_IMPUESTOS_DIFERIDOS\": 0,\n  \"241_PERIODIFICACIONES_LP\": 0,\n  \"242_ACREEDORES_COMERCIALES_NC\": 0,\n  \"243_DEUDA_CARACTERISTICAS_ESPECIALES_LP\": 0,\n  \"245_PASIVO_ACTIVO_NO_CORRIENTE_VENTA\": 0,\n  \"246_PROVISIONES_CP\": 0,\n  \"249_DEUDAS_ENTIDADES_CREDITO_CP\": 0,\n  \"250_ACREEDORES_ARRENDAMIENTO_CP\": 0,\n  \"253_OTRAS_DEUDAS_LP\": 0,\n  \"254_DEUDAS_EMPRESAS_GRUPO_ASOC_CP\": 0,\n  \"257_PROVEEDORES_LP\": 0,\n  \"258_PROVEEDORES_CP\": 0,\n  \"265_OTROS_ACREEDORES\": 0,\n  \"266_PERIODIFICACIONES_CP\": 0,\n  \"267_DEUDA_CARACTERISTICAS_ESPECIALES_CP\": 0,\n  \"301_IMPORTE_NETO_CIFRA_NEGOCIO\": 0,\n  \"304_VARIACION_EXISTENCIAS_PRODUCTOS\": 0,\n  \"305_TRABAJOS_EMPRESA_ACTIVO\": 0,\n  \"-306_APROVISIONAMIENTOS\": 0,\n  \"311_OTROS_INGRESOS_EXPLOTACION\": 0,\n  \"-316_GASTOS_PERSONAL\": 0,\n  \"-325_OTROS_GASTOS_EXPLOTACION\": 0,\n  \"-330_AMORTIZACION_INMOVILIZADO\": 0,\n  \"331_IMPUTACION_SUBVENCIONES\": 0,\n  \"332_EXCESOS_PROVISIONES\": 0,\n  \"333_DETERIORO_ENAJENACIONES_INMOVILIZADO\": 0,\n  \"340_DIFERENCIA_NEGATIVA_COMBINACIONES\": 0,\n  \"341_OTROS_RESULTADOS\": 0,\n  \"350_IMPUTACION_SUBVENCIONES_FINANCIERAS\": 0,\n  \"344+347_OTROS_INGRESOS_FINANCIEROS\": 0,\n  \"-351_GASTOS_FINANCIEROS\": 0,\n  \"355_VARIACION_VALOR_RAZONABLE\": 0,\n  \"358_DIFERENCIAS_CAMBIO\": 0,\n  \"359_DETERIORO_ENAJENACIONES_FINANCIEROS\": 0,\n  \"377_INCORPORACION_GASTOS_FINANCIEROS\": 0,\n  \"378_INGRESOS_FINANCIEROS_CONVENIOS\": 0,\n  \"379_RESTO_INGRESOS_GASTOS\": 0,\n  \"-372_IMPUESTOS_BENEFICIOS\": 0\n},\n  \n  \"Álava-Consolidado\": {\n    \"01_RAZON_SOCIAL\":0,\n    \"02_NIF\":0,\n    \"03_EJERCICIO\":0,\n    \"04_FECHA\":0,\n    \"05_PROM_EMPLEADOS_TOD_CONT_ACTUAL\":0,\n    \"103_FONDO_COMERCIO_CONSOLIDACION\": 0,\n    \"140_INVESTIGACION\": 0,\n    \"141_PROPIEDAD_INTELECTUAL\": 0,\n    \"104_OTRO_INMOVILIZADO_INTANGIBLE\": 0,\n    \"106_TERRENOS_CONSTRUCCIONES\": 0,\n    \"107_INSTALACIONES_TECNICAS_INMOVILIZADO_MATERIAL\": 0,\n    \"108_INMOVILIZADO_CURSO_ANTICIPOS\": 0,\n    \"109_INVERSIONES_INMOBILIARIAS\": 0,\n    \"111_PARTICIPACIONES_PUESTAS_EQUIVALENCIA\": 0,\n    \"136_CREDITOS_SOCIEDADES_PUESTAS_EQUIVALENCIA\": 0,\n    \"112_OTROS_ACTIVOS_FINANCIEROS\": 0,\n    \"113_INVERSIONES_FINANCIERAS_LARGO_PLAZO\": 0,\n    \"116_ACTIVOS_IMPUESTO_DIFERIDO\": 0,\n    \"117_DEUDORES_COMERCIALES_NO_CORRIENTES\": 0,\n    \"120_ACTIVOS_NO_CORRIENTES_MANTENIDOS_VENTA\": 0,\n    \"121_EXISTENCIAS\": 0,\n    \"123_CLIENTES_VENTAS_SERVICIOS_CORTO_PLAZO\": 0,\n    \"124_SOCIEDADES_PUESTAS_EQUIVALENCIA\": 0,\n    \"125_ACTIVOS_IMPUESTO_CORRIENTE\": 0,\n    \"126_OTROS_DEUDORES\": 0,\n    \"128_CREDITOS_EMPRESAS_PUESTAS_EQUIVALENCIA\": 0,\n    \"129_OTROS_ACTIVOS_FINANCIEROS\": 0,\n    \"130_INVERSIONES_FINANCIERAS_CORTO_PLAZO\": 0,\n    \"133_PERIODIFICACIONES_CORTO_PLAZO\": 0,\n    \"134_EFECTIVO_ACTIVOS_LIQUIDOS_EQUIVALENTES\": 0,\n    \"249_CAPITAL_ESCRITURADO\": 0,\n    \"-250_CAPITAL_NO_EXIGIDO\": 0,\n    \"204_PRIMA_EMISION\": 0,\n    \"205_OTRAS_RESERVAS\": 0,\n    \"-210_ACC_PART_PATRIMONIO_PROPIAS_SOC_DOMINANTE\": 0,\n    \"211_OTRAS_APORTACIONES_SOCIOS\": 0,\n    \"212_RDO_EJ_ATRIBUIDO_SOCIEDAD_DOMINANTE\": 0,\n    \"-215_DIVIDENDO_CUENTA\": 0,\n    \"216_OTROS_INSTRUMENTOS_PATRIMONIO\": 0,\n    \"251_DIFERENCIA_CONVERSION\": 0,\n    \"252_OTROS_AJUSTES_CAMBIO_VALOR\": 0,\n    \"218_SUBVENCIONES_DONACIONES_LEGADOS_RECIBIDOS\": 0,\n    \"219_SOCIOS_EXTERNOS\": 0,\n    \"221_PROVISIONES_LARGO_PLAZO\": 0,\n    \"223_OBLIGACIONES_VALORES_NEGOCIABLES\": 0,\n    \"224_DEUDAS_ENTIDADES_CREDITO\": 0,\n    \"225_ACREEDORES_ARRENDAMIENTO_FINANCIERO\": 0,\n    \"226_OTROS_PASIVOS_FINANCIEROS\": 0,\n    \"253_DEUDAS_EMPRESAS_PUESTAS_EQUIVALENCIA\": 0,\n    \"254_OTRAS_DEUDAS\": 0,\n    \"228_PASIVOS_IMPUESTOS_DIFERIDO\": 0,\n    \"229_PERIODIFICACIONES_LARGO_PLAZO\": 0,\n    \"230_ACREEDORES_COMERCIALES_NO_CORRIENTES\": 0,\n    \"231_DEUDA_CARACTERISTICAS_ESPECIALES_LARGO_PLAZO\": 0,\n    \"233_PASIVOS_VINCULADOS_ACTIVOS_NO_CORRIENTES\": 0,\n    \"257_PROVISIONES_DERECHOS_EMISION_GEI\": 0,\n    \"258_OTRAS_PROVISIONES\": 0,\n    \"236_OBLIGACIONES_VALORES_NEGOCIABLES\": 0,\n    \"237_DEUDAS_ENTIDADES_CREDITO\": 0,\n    \"238_ACREEDORES_ARRENDAMIENTO_FINANCIERO\": 0,\n    \"239_OTROS_PASIVO_FINANCIEROS\": 0,\n    \"255_DEUDAS_SOCIEDADES_PUESTAS_EQUIVALENCIA\": 0,\n    \"256_OTRAS_DEUDAS\": 0,\n    \"242_PROVEEDORES\": 0,\n    \"243_PROVEEDORES_EMPRESAS_PUESTAS_EQUIVALENCIA\": 0,\n    \"244_PASIVOS_IMPUESTOS_CORRIENTES\": 0,\n    \"245_OTROS_ACREEDORES\": 0,\n    \"246_PERIODIFICACIONES_CORTO_PLAZO\": 0,\n    \"247_DEUDA_CARACTERISTICAS_ESPECIALES_CORTO_PLAZO\": 0,\n    \"302_VENTAS\": 0,\n    \"303+320+391_PRESTACIONES_SERVICIO\": 0,\n    \"304_VARIACION_EXISTENCIAS_PRODUCTOS_TERMINADOS\": 0,\n    \"305_TRABAJOS_EMPRESA_ACTIVO\": 0,\n    \"-307_CONSUMO_MERCADERIAS\": 0,\n    \"-308_CONSUMO_MATERIAS_PRIMAS\": 0,\n    \"-309_TRABAJOS_OTRAS_EMPRESAS\": 0,\n    \"-310_DETERIORO_MERCADERIAS_MATERIAS_PRIMAS\": 0,\n    \"312_INGRESOS_ACCESORIOS_GESTION_CORRIENTE\": 0,\n    \"315_SUBVENCIONES_EXPLOTACION\": 0,\n    \"-317_SUELDOS_SALARIOS_ASIMILADOS\": 0,\n    \"-319_CARGAS_SOCIALES\": 0,\n    \"-324_PROVISIONES\": 0,\n    \"-328_PERDIDAS_DETERIORO_PROVISIONES_OPERACIONES_COMERCIALES\": 0,\n    \"-329_OTROS_GASTOS_GESTION_CORRIENTES\": 0,\n    \"-395_GASTOS_EMISION_GEI\": 0,\n    \"-330_AMORTIZACION_INMOVILIZADO\": 0,\n    \"331_IMPUTACION_SUBVENCIONES_INMOVILIZADO\": 0,\n    \"332_EXCESOS_PROVISIONES\": 0,\n    \"334_DETERIORO_PERDIDAS\": 0,\n    \"337_RESULTADOS_ENAJENACIONES\": 0,\n    \"380_RESULTADO_PERDIDA_CONTROL_DEPENDIENTE\": 0,\n    \"381_RESULTADO_ATRIBUIDO_PARTICIPACION_RETENIDA\": 0,\n    \"342_DIFERENCIA_NEGATIVA_COMBINACIONES_NEGOCIO\": 0,\n    \"343_OTROS_RESULTADOS\": 0,\n    \"346_PARTICIPACIONES_INSTRUMENTOS_PATRIMONIO\": 0,\n    \"349_VALORES_NEGOCIABLES_INSTRUMENTOS_FINANCIEROS\": 0,\n    \"352_IMPUTACION_SUBVENCIONES_DONACIONES_LEGADOS\": 0,\n    \"-353_GASTOS_FINANCIEROS\": 0,\n    \"358_VALOR_RAZONABLE_CAMBIOS_PYG\": 0,\n    \"359_TRANSFERENCIA_AJUSTE_VALOR_RAZONABLE\": 0,\n    \"382_IMPUTACION_RESULTADO_DIFERENCIA_CONVERSION\": 0,\n    \"383_OTRAS_DIFERENCIAS_CAMBIO\": 0,\n    \"362_DETERIORO_PERDIDAS\": 0,\n    \"367_RESULTADOS_ENAJENACIONES\": 0,\n    \"388_INCORPORACION_ACTIVO_GASTOS_FINANCIEROS\": 0,\n    \"389_INGRESOS_FINANCIEROS_CONVENIOS_ACREEDORES\": 0,\n    \"390_RESTO_INGRESOS_GASTOS\": 0,\n    \"384_PARTICIPACION_BENEFICIOS_PERDIDAS_SOC_PUESTAS_EQUIVALENCIA\": 0,\n    \"385_DETERIORO_RESULTADO_PERDIDA_INFLUENCIA_SOC_EQUIVALENCIA\": 0,\n    \"-386_DIFERENCIA_NEGATIVA_CONSOLIDACION_SOC_EQUIVALENCIA\": 0,\n    \"-374_IMPUESTOS_BENEFICIOS\": 0,\n    \"376_RESULTADO_EJERCICIO_OPERACIONES_INTERRUMPIDAS\": 0,\n    \"378_RESULTADO_ATRIBUIDO_SOCIEDAD_DOMINANTE\": 0,\n    \"379_RESULTADO_ATRIBUIDO_SOCIOS_EXTERNOS\": 0\n  },\n\n  // === NAVARRA ===\n  \"Navarra-Normal\": {\n    \"01_RAZON_SOCIAL\":0,\n    \"02_NIF\":0,\n    \"03_EJERCICIO\":0,\n    \"04_FECHA\":0,\n    \"05_PROM_EMPLEADOS_TOD_CONT_ACTUAL\":0,\n    \"1502_DESARROLLO\": 0,\n    \"1503_CONCESIONES\": 0,\n    \"1504_PATENTES_LIC_MARCAS\": 0,\n    \"1505_FONDO_COMERCIO\": 0,\n    \"1506_APLIC_INFORMATICAS\": 0,\n    \"1507_INVESTIGACION\": 0,\n    \"1508_OTRO_INMOV_INTANGIBLE\": 0,\n    \"1512+1513_TERRENOS_CONSTRUCC\": 0,\n    \"1514_INSTAL_TECNICAS\": 0,\n    \"1515_INMOV_CURSO_ANTICIPOS\": 0,\n    \"1519_TERRENOS\": 0,\n    \"1520_CONSTRUCCIONES\": 0,\n    \"1522_INSTR_PATRIMONIO\": 0,\n    \"1523_CREDITOS_EMPRESAS\": 0,\n    \"1524_VALORES_DEUDA\": 0,\n    \"1525_DERIVADOS\": 0,\n    \"1526_OTROS_ACT_FINAN\": 0,\n    \"1527_OTRAS_INVERSIONES\": 0,\n    \"1532_INSTR_PATRIMONIO\": 0,\n    \"1533_CREDITOS_TERCEROS\": 0,\n    \"1534_VALORES_DEUDA\": 0,\n    \"1535_DERIVADOS\": 0,\n    \"1536_OTROS_ACT_FINAN\": 0,\n    \"1537_OTRAS_INVERSIONES\": 0,\n    \"1541_ACT_IMP_DIFERIDO\": 0,\n    \"1542_DEUDAS_COM_NO_CORR\": 0,\n    \"1551_ACT_NO_CORR_VENTA\": 0,\n    \"1553_COMERCIALES\": 0,\n    \"1577_CORTO_PLAZO\": 0,\n    \"1576_LARGO_PLAZO\": 0,\n    \"1556_CICLO_LARGO_PROD\": 0,\n    \"1157_CICLO_CORTO_PROD\": 0,\n    \"1559_CICLO_LARGO_PROD\": 0,\n    \"1560_CICLO_CORTO_PROD\": 0,\n    \"1561_SUBPROD_RESIDUOS\": 0,\n    \"1562_ANTICIPOS_PROV\": 0,\n    \"1567_CLIENTES_LARGO_PLAZO\": 0,\n    \"1568_CLIENTES_CORTO_PLAZO\": 0,\n    \"1569_CLIENTES_GRUPO_ASOC\": 0,\n    \"1570_OTROS_DEUDORES\": 0,\n    \"1571_PERSONAL\": 0,\n    \"1572_ACT_IMP_CORRIENTE\": 0,\n    \"1573_CREDITOS_ADM_PUB\": 0,\n    \"1574_ACCIONISTAS_DESEMB\": 0,\n    \"1581_INSTR_PATRIMONIO\": 0,\n    \"1582_CREDITOS_EMPRESAS\": 0,\n    \"1583_VALORES_DEUDA\": 0,\n    \"1584_DERIVADOS\": 0,\n    \"1585_OTROS_ACT_FINAN\": 0,\n    \"1586_OTRAS_INVERSIONES\": 0,\n    \"1591_INSTR_PATRIMONIO\": 0,\n    \"1592_CREDITOS_EMPRESAS\": 0,\n    \"1593_VALORES_DEUDA\": 0,\n    \"1594_DERIVADOS\": 0,\n    \"1595_OTROS_ACT_FINAN\": 0,\n    \"1596_OTRAS_INVERSIONES\": 0,\n    \"1601_PERIODIF_CORTO_PZ\": 0,\n    \"1603_TESORERIA\": 0,\n    \"1604_ACT_LIQUIDOS_EQ\": 0,\n    \"1652_CAPITAL_ESCRIT\": 0,\n    \"1653_CAPITAL_NO_EXIG\": 0,\n    \"1654_PRIMA_EMISION\": 0,\n    \"1657_RES_LEGAL_ESTAT\": 0,\n    \"1658+1659+1660+1686+1687+1661+1663+1665+1666_OTRAS_RESERVAS\": 0,\n    \"1656+1683_RES_REVALORIZ\": 0,\n    \"1667_ACC_PROPIA\": 0,\n    \"1669_REMANENTE\": 0,\n    \"1670_RES_EJER_ANT\": 0,\n    \"1671_APORT_SOCIOS\": 0,\n    \"1672_RES_EJERCICIO\": 0,\n    \"1673_DIVID_CUENTA\": 0,\n    \"1674_OTROS_INSTR_PATRIM\": 0,\n    \"1676_ACT_FIN_VR_PATRIM\": 0,\n    \"1677_OP_COBERTURA\": 0,\n    \"1678_ACT_NO_CORR_VENTA\": 0,\n    \"1679_DIF_CAMBIO\": 0,\n    \"1680_OTROS\": 0,\n    \"1682_SUBV_DON_LEG_REC\": 0,\n    \"1692_OBLIG_PERSONAL\": 0,\n    \"1693_PROV_MEDIOAMBIENTE\": 0,\n    \"1694_PROV_RESTRUCT\": 0,\n    \"1695_OTRAS_PROVISIONES\": 0,\n    \"1702_OBLIG_VAL_NEGOC\": 0,\n    \"1703_DEUDAS_ENT_CRED\": 0,\n    \"1704_ACREED_ARR_FINAN\": 0,\n    \"1705_DERIVADOS\": 0,\n    \"1706_OTROS_PAS_FINAN\": 0,\n    \"1708_DEUDAS_GRUPO_LP\": 0,\n    \"1709_PAS_IMP_DIFERIDO\": 0,\n    \"1710_PERIODIF_LARGO_PZ\": 0,\n    \"1711_ACREED_COM_NO_CORR\": 0,\n    \"1712_DEUDA_ESPECIAL_LP\": 0,\n    \"1721_PAS_VINC_ACT_VENTA\": 0,\n    \"1722_OTRAS_PROVISIONES\": 0,\n    \"1724_OBLIG_VAL_NEGOC\": 0,\n    \"1725_DEUDAS_ENT_CRED\": 0,\n    \"1726_ACREED_ARR_FINAN\": 0,\n    \"1727_DERIVADOS\": 0,\n    \"1728_OTROS_PAS_FINAN\": 0,\n    \"1731_DEUDAS_GRUPO_CP\": 0,\n    \"1734_PROV_LARGO_PLAZO\": 0,\n    \"1735_PROV_CORTO_PLAZO\": 0,\n    \"1736_PROV_GRUPO_ASOC\": 0,\n    \"1737_ACREEDORES_VARIOS\": 0,\n    \"1738_REMUN_PENDIENTES\": 0,\n    \"1739_PAS_IMP_CORRIENTE\": 0,\n    \"1740_DEUDAS_ADM_PUB\": 0,\n    \"1741_ANTICIPOS_CLIENTES\": 0,\n    \"1745_PERIODIF_CORTO_PZ\": 0,\n    \"1746_DEUDA_ESPECIAL_CP\": 0,\n    \"1801+1802+1803+1804_VENTAS\": 0,\n    \"1805_PREST_SERVICIOS\": 0,\n    \"1901_ING_HOLDING_FINAN\": 0,\n    \"1806_VAR_EXIST_PROD\": 0,\n    \"1807_TRAB_PROPIO_ACT\": 0,\n    \"1811_CONS_MERCADERIAS\": 0,\n    \"1812_CONS_MATERIAS\": 0,\n    \"1813_TRAB_OTRAS_EMP\": 0,\n    \"1814_DETERIORO_APROV\": 0,\n    \"1816_ING_ACCESORIOS\": 0,\n    \"1819_SUBV_EXPLOTACION\": 0,\n    \"1822+1824+1826+1827_SUELDOS_SALARIOS\": 0,\n    \"1825+1828_CARGAS_SOCIALES\": 0,\n    \"1829_PROVISIONES\": 0,\n    \"1833_SERV_EXTERIORES\": 0,\n    \"1834_TRIBUTOS\": 0,\n    \"1835_DETERIORO_COMERCIAL\": 0,\n    \"1837_OTROS_GASTOS\": 0,\n    \"1905_GASTOS_GEI\": 0,\n    \"1840_AMORT_INMOVILIZADO\": 0,\n    \"1841_SUBV_INMOV_NO_FIN\": 0,\n    \"1842_EXCESO_PROVISIONES\": 0,\n    \"1844_DETERIORO_PERDIDAS\": 0,\n    \"1847_RES_ENAJENACIONES\": 0,\n    \"1906_DETERIORO_HOLDING\": 0,\n    \"1851_DIF_NEG_COMB_NEG\": 0,\n    \"1852-1850_OTROS_RESULT\": 0,\n    \"1858_ING_GRUPO_ASOC\": 0,\n    \"1859_ING_TERCEROS\": 0,\n    \"1861_GAST_GRUPO_ASOC\": 0,\n    \"1862+1888_GAST_TERCEROS\": 0,\n    \"1863_SUBV_FINANCIERAS\": 0,\n    \"1866_GAST_DEUDAS_GRUPO\": 0,\n    \"1867_GAST_DEUDAS_TERC\": 0,\n    \"1868_ACTUALIZ_PROV\": 0,\n    \"1872_VR_PERD_GANAN\": 0,\n    \"1873_TRANSF_AJUSTE_VR\": 0,\n    \"1875_DIF_CAMBIO\": 0,\n    \"1877_DETERIORO_PERDIDAS\": 0,\n    \"1882_RES_ENAJENACIONES\": 0,\n    \"1897_GAST_FINAN_ACTIVO\": 0,\n    \"1898_ING_ACREEDORES\": 0,\n    \"1899_OTROS_ING_GAS\": 0,\n    \"1891_IMPUESTOS\": 0,\n    \"1895_RES_OP_INTERRUMP\": 0,\n    \"1950_RESULTADO_EJER\": 0\n  },\n  \"Navarra-Abreviado\":{\n  \"01_RAZON_SOCIAL\":0,\n  \"02_NIF\":0,\n  \"03_EJERCICIO\":0,\n  \"04_FECHA\":0,\n  \"05_PROM_EMPLEADOS_TOD_CONT_ACTUAL\":0,\n  \"1501_INMOVILIZADO_INTANGIBLE\": 0,\n  \"1511_INMOVILIZADO_MATERIAL\": 0,\n  \"1518_INVERSIONES_INMOBILIARIAS\": 0,\n  \"1521_INVERSIONES_EMPRESAS_GRUPO_ASOCIADAS_LP\": 0,\n  \"1531_INVERSIONES_FINANCIERAS_LP\": 0,\n  \"1541_ACTIVO_IMPUESTO_DIFERIDO\": 0,\n  \"1542_DEUDORES_COMERCIALES_NO_CORRIENTES\": 0,\n  \"1551_ACTIVOS_NO_CORRIENTE_MANTENIDOS_VENTA\": 0,\n  \"1552_EXISTENCIAS\": 0,\n  \"1567_CLIENTES_VENTAS_SERVICIOS_LP\": 0,\n  \"1568_CLIENTES_VENTAS_SERVICIOS_CP\": 0,\n  \"1574_ACCIONISTAS_SOCIOS_DESEMBOLSOS_EXIGIDOS\": 0,\n  \"1575_OTROS_DEUDORES\": 0,\n  \"1580_INVERSIONES_EMPRESAS_GRUPO_ASOCIADAS_CP\": 0,\n  \"1590_INVERSIONES_FINANCIERAS_CP\": 0,\n  \"1601_PERIODIFICACIONES_CP\": 0,\n  \"1602_EFECTIVO_ACTIVOS_LIQUIDOS_EQUIVALENTES\": 0,\n  \"1652_CAPITAL_ESCRITURADO\": 0,\n  \"-1653_CAPITAL_NO_EXIGIDO\": 0,\n  \"1654_PRIMA_EMISION\": 0,\n  \"1655_OTRAS_RESERVAS\": 0,\n  \"-1667_ACCIONES_PARTICIPACIONES_PATRIMONIO_PROPIAS\": 0,\n  \"1668_RESULTADOS_EJERCICIOS_ANTERIORES\": 0,\n  \"1671_OTRAS_APORTACIONES_SOCIOS\": 0,\n  \"1672_RESULTADO_EJERCICIO\": 0,\n  \"-1673_DIVIDENDO_CUENTA\": 0,\n  \"1674_OTROS_INSTRUMENTOS_PATRIMONIO\": 0,\n  \"1675+1681_AJUSTES_CAMBIO_VALOR\": 0,\n  \"1682_SUBVENCIONES_DONACIONES_LEGADOS_RECIBIDOS\": 0,\n  \"1691+1743_PROVISIONES_LP\": 0,\n  \"1703_DEUDAS_ENTIDADES_CREDITO_LP\": 0,\n  \"1704_ACREEDORES_ARRENDAMIENTO_FINANCIERO_LP\": 0,\n  \"1707_OTRAS_DEUDAS_LP\": 0,\n  \"1708_DEUDAS_EMPRESAS_GRUPO_ASOCIADAS_LP\": 0,\n  \"1709_PASIVO_IMPUESTOS_DIFERIDOS\": 0,\n  \"1710_PERIODIFICACIONES_LP\": 0,\n  \"1711_ACREEDORES_COMERCIALES_NO_CORRIENTES\": 0,\n  \"1712_DEUDA_CARACTERISTICAS_ESPECIALES_LP\": 0,\n  \"1721_PASIVOS_VINCULADOS_ACTIVOS_NO_CORRIENTES_VENTA\": 0,\n  \"1722_PROVISIONES_CP\": 0,\n  \"1725_DEUDAS_ENTIDADES_CREDITO_CP\": 0,\n  \"1726_ACREEDORES_ARRENDAMIENTO_FINANCIERO_CP\": 0,\n  \"1729_OTRAS_DEUDAS_CP\": 0,\n  \"1731_DEUDAS_EMPRESAS_GRUPO_ASOCIADAS_CP\": 0,\n  \"1734_PROVEEDORES_LP\": 0,\n  \"1735_PROVEEDORES_CP\": 0,\n  \"1742_OTROS_ACREEDORES\": 0,\n  \"1745_PERIODIFICACIONES_CP\": 0,\n  \"1746_DEUDA_CARACTERISTICAS_ESPECIALES_CP\": 0,\n  \"1900_IMPORTE_NETO_CIFRA_NEGOCIO\": 0,\n  \"1806_VARIACION_EXISTENCIAS_PRODUCTOS_TERMINADOS_CURSO\": 0,\n  \"1807_TRABAJOS_EMPRESA_ACTIVO\": 0,\n  \"1810_APROVISIONAMIENTOS\": 0,\n  \"1815_OTROS_INGRESOS_EXPLOTACION\": 0,\n  \"1821_GASTOS_PERSONAL\": 0,\n  \"1831_OTROS_GASTOS_EXPLOTACION\": 0,\n  \"1840_AMORTIZACION_INMOVILIZADO\": 0,\n  \"1841_IMPUTACION_SUBVENCIONES_INMOVILIZADO_NO_FINANCIERO\": 0,\n  \"1842_EXCESOS_PROVISIONES\": 0,\n  \"1843_DETERIORO_RESULTADO_ENAJENACIONES_INMOVILIZADO\": 0,\n  \"1851_DIFERENCIA_NEGATIVA_COMBINACIONES_NEGOCIO\": 0,\n  \"1852-1850_OTROS_RESULTADOS\": 0,\n  \"1863_IMPUTACION_SUBVENCIONES_DONACIONES_LEGADOS_FINANCIEROS\": 0,\n  \"1857+1860_OTROS_INGRESOS_FINANCIEROS\": 0,\n  \"1865_GASTOS_FINANCIEROS\": 0,\n  \"1871_VARIACION_VALOR_RAZONABLE_INSTRUMENTOS_FINANCIEROS\": 0,\n  \"1875_DIFERENCIAS_CAMBIO\": 0,\n  \"1876_DETERIORO_RESULTADO_ENAJENACIONES_INSTRUMENTOS_FINANCIEROS\": 0,\n  \"1897_INCORPORACION_ACTIVO_GASTOS_FINANCIEROS\": 0,\n  \"1898_INGRESOS_FINANCIEROS_DERIVADOS_CONVENIOS_ACREEDORES\": 0,\n  \"1899_RESTO_INGRESOS_GASTOS\": 0,\n  \"1891_IMPUESTOS_BENEFICIOS\": 0\n},\n  \"Navarra-Consolidado\": {\n    \"01_RAZON_SOCIAL\":0,\n    \"02_NIF\":0,\n    \"03_EJERCICIO\":0,\n    \"04_FECHA\":0,\n    \"05_PROM_EMPLEADOS_TOD_CONT_ACTUAL\":0,\n    \"363_FONDO_COMERCIO_CONSOLIDACION\": 0,\n    \"360_INVESTIGACION\": 0,\n    \"396_PROPIEDAD_INTELECTUAL\": 0,\n    \"364_OTRO_INMOVILIZADO_INTANG\": 0,\n    \"366_TERRENOS_CONSTRUCCIONES\": 0,\n    \"367_INSTALACIONES_TECNICAS\": 0,\n    \"368_INMOVILIZADO_CURSO_ANTICIPOS\": 0,\n    \"369_INVERSIONES_INMOBILIARIAS\": 0,\n    \"371+372_OTRAS_INVERSIONES\": 0,\n    \"373_INVERSIONES_FINANCIERAS_LP\": 0,\n    \"376_ACTIVOS_IMPUESTO_DIFERIDO\": 0,\n    \"377_DEUDORES_COMERCIALES_NC\": 0,\n    \"380_ACTIVOS_NC_MANTENIDOS_VENTA\": 0,\n    \"381_EXISTENCIAS\": 0,\n    \"383_CLIENTES_VENTAS_CP\": 0,\n    \"385_ACTIVOS_IMPUESTO_CORRIENTE\": 0,\n    \"386_OTROS_DEUDORES\": 0,\n    \"388+389_OTRAS_INVERSIONES\": 0,\n    \"390_INVERSIONES_FINANCIERAS_CP\": 0,\n    \"393_PERIODIFICACIONES_CP\": 0,\n    \"394_EFECTIVO_ACTIVOS_LIQUIDOS\": 0,\n    \"500_CAPITAL_ESCRITURADO\": 0,\n    \"501_CAPITAL_NO_EXIGIDO\": 0,\n    \"454_PRIMA_EMISION\": 0,\n    \"499_RESERVAS_REVALORIZACION\": 0,\n    \"450+502_OTRAS_RESERVAS\": 0,\n    \"460_ACCIONES_PATRIMONIO_PROPIAS\": 0,\n    \"461_OTRAS_APORTACIONES_SOCIOS\": 0,\n    \"462_RESULTADO_ATRIBUIDO_SOCIEDAD_DOMINANTE\": 0,\n    \"465_DIVIDENDO_CUENTA\": 0,\n    \"466_OTROS_INSTRUMENTOS_PATRIMONIO\": 0,\n    \"467_OTROS_AJUSTES_CAMBIO_VALOR\": 0,\n    \"468_SUBVENCIONES_DONACIONES_LEGADOS\": 0,\n    \"469_SOCIOS_EXTERNOS\": 0,\n    \"471_PROVISIONES_LP\": 0,\n    \"473_OBLIGACIONES_VALORES_NEGOCIABLES\": 0,\n    \"474_DEUDAS_ENTIDADES_CREDITO\": 0,\n    \"475_ACREEDORES_ARRENDAMIENTO_FINANCIERO\": 0,\n    \"476_OTROS_PASIVOS_FINANCIEROS\": 0,\n    \"477_OTRAS_DEUDAS\": 0,\n    \"478_PASIVOS_IMPUESTOS_DIFERIDOS\": 0,\n    \"479_PERIODIFICACIONES_LP\": 0,\n    \"480_ACREEDORES_COMERCIALES_NC\": 0,\n    \"481_DEUDA_CARACTERISTICAS_ESPECIALES_LP\": 0,\n    \"483_PASIVOS_VINCULADOS_ACTIVOS_NC_VENTA\": 0,\n    \"484_OTRAS_PROVISIONES\": 0,\n    \"486_OBLIGACIONES_VALORES_NEGOCIABLES\": 0,\n    \"487_DEUDAS_ENTIDADES_CREDITO\": 0,\n    \"488_ACREEDORES_ARRENDAMIENTO_FINANCIERO\": 0,\n    \"489_OTROS_PASIVOS_FINANCIEROS\": 0,\n    \"490_OTRAS_DEUDAS\": 0,\n    \"492_PROVEEDORES_CP\": 0,\n    \"494_PASIVOS_IMPUESTOS_CORRIENTES\": 0,\n    \"495_OTROS_ACREEDORES\": 0,\n    \"496_PERIODIFICACIONES_CP\": 0,\n    \"497_DEUDA_CARACTERISTICAS_ESPECIALES_CP\": 0,\n    \"682_VENTAS\": 0,\n    \"683+2684+680_PRESTACIONES_SERVICIO\": 0,\n    \"684_VARIACION_EXISTENCIAS_PRODUCTOS\": 0,\n    \"685_TRABAJOS_EMPRESA_ACTIVO\": 0,\n    \"687_CONSUMO_MERCADERIAS\": 0,\n    \"688_CONSUMO_MATERIAS_PRIMAS\": 0,\n    \"689_TRABAJOS_OTRAS_EMPRESAS\": 0,\n    \"690_DETERIORO_MERCADERIAS_MATERIAS\": 0,\n    \"692_INGRESOS_ACCESORIOS\": 0,\n    \"695_SUBVENCIONES_EXPLOTACION\": 0,\n    \"697+699+701+702_SUELDOS_SALARIOS\": 0,\n    \"698+700+703_CARGAS_SOCIALES\": 0,\n    \"704_PROVISIONES\": 0,\n    \"708_PERDIDAS_DETERIORO_PROVISIONES\": 0,\n    \"709_OTROS_GASTOS_GESTION\": 0,\n    \"765_GASTOS_EMISION_GEI\": 0,\n    \"710_AMORTIZACION_INMOVILIZADO\": 0,\n    \"711_IMPUTACION_SUBVENCIONES_INMOVILIZADO\": 0,\n    \"712_EXCESOS_PROVISIONES\": 0,\n    \"714_DETERIORO_PERDIDAS\": 0,\n    \"717_RESULTADOS_ENAJENACIONES\": 0,\n    \"7201_RESULTADO_PERDIDA_CONTROL_DEPENDIENTE\": 0,\n    \"7202_RESULTADO_ATRIBUIDO_PARTICIPACION_RETENIDA\": 0,\n    \"722_DIFERENCIA_NEGATIVA_COMBINACIONES_NEGOCIO\": 0,\n    \"723_OTROS_RESULTADOS\": 0,\n    \"726_PARTICIPACIONES_INSTRUMENTOS_PATRIMONIO\": 0,\n    \"729_VALORES_NEGOCIABLES_INSTRUMENTOS_FINANCIEROS\": 0,\n    \"732_IMPUTACION_SUBVENCIONES_FINANCIERAS\": 0,\n    \"733_GASTOS_FINANCIEROS\": 0,\n    \"769_VALOR_RAZONABLE_CAMBIO_RESULTADO\": 0,\n    \"770_TRANSFERENCIA_AJUSTE_VALOR_RAZONABLE\": 0,\n    \"740_OTRAS_DIFERENCIAS_CAMBIO\": 0,\n    \"742_DETERIORO_PERDIDAS\": 0,\n    \"747_RESULTADOS_ENAJENACIONES\": 0,\n    \"7610_INCORPORACION_ACTIVO_GASTOS_FINANCIEROS\": 0,\n    \"7611_INGRESOS_FINANCIEROS_CONVENIOS_ACREEDORES\": 0,\n    \"7612_RESTO_INGRESOS_GASTOS\": 0,\n    \"754_IMPUESTOS_BENEFICIOS\": 0,\n    \"756_RESULTADO_OPERACIONES_INTERRUMPIDAS\": 0,\n    \"758_RESULTADO_ATRIBUIDO_SOCIEDAD_DOMINANTE\": 0,\n    \"759_RESULTADO_ATRIBUIDO_SOCIOS_EXTERNOS\": 0\n  },\n};\n\n// Traer valores desde el nodo \"Extrae Haciend y Modelo\"\nconst origen = $('Extrae Haciend y Modelo').first().json;\n\n// Construye clave Hacienda-Modelo\nconst clave = `${origen.hacienda}-${origen.modelo}`;\n\n// Selecciona la plantilla o devuelve mensaje de error\nconst plantilla = plantillas[clave] || { error: \"No existe plantilla para esta combinación\" };\n\nreturn {\n  json: {\n    Hacienda: origen.hacienda,\n    Modelo: origen.modelo,\n    PlantillaExtraccion: plantilla\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1744,
+        272
+      ],
+      "id": "08d4240b-a611-45ef-abdd-8301ebdbf17c",
+      "name": "Carga de Plantillas"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Recibes el texto completo de la IA\nconst textoIA = $json.content?.parts?.[0]?.text || $json.text || \"\";\n\n// Copia inicial\nlet jsonString = textoIA;\n\n// Estrategia 1: Remover los backticks y la palabra 'json'\njsonString = jsonString\n  .replace(/```json/g, '')    \n  .replace(/```/g, '')        \n  .trim();\n\n// Estrategia 2: Si todavía tiene contenido no JSON, extraer solo el JSON\nif (jsonString.includes('{') && jsonString.includes('}')) {\n  const inicio = jsonString.indexOf('{');\n  const fin = jsonString.lastIndexOf('}') + 1;\n  jsonString = jsonString.substring(inicio, fin);\n}\n\n// Estrategia 3: Limpiar saltos de línea y espacios extras\njsonString = jsonString\n  .replace(/\\n/g, ' ')\n  .replace(/\\s+/g, ' ')\n  .trim();\n\n// Debug\nconsole.log('Texto limpio:', jsonString);\n\n// Parsear a objeto JavaScript\nlet datosExtraidos;\ntry {\n  datosExtraidos = JSON.parse(jsonString);\n  console.log('✅ JSON parseado correctamente');\n} catch (error) {\n  try {\n    const jsonMatch = textoIA.match(/\\{[\\s\\S]*\\}/);\n    if (jsonMatch) {\n      jsonString = jsonMatch[0];\n      datosExtraidos = JSON.parse(jsonString);\n      console.log('✅ JSON parseado con limpieza agresiva');\n    } else {\n      throw new Error('No se pudo encontrar JSON en el texto');\n    }\n  } catch (error2) {\n    throw new Error(`Error parseando JSON de IA: ${error2.message}. Texto: ${textoIA.substring(0, 200)}...`);\n  }\n}\n\n// 🚀 Extraer solo PlantillaExtraccion si existe\nlet plantilla = datosExtraidos?.PlantillaExtraccion;\nif (!plantilla && datosExtraidos?.datosExtraidos?.PlantillaExtraccion) {\n  plantilla = datosExtraidos.datosExtraidos.PlantillaExtraccion;\n}\n\nif (!plantilla || typeof plantilla !== 'object') {\n  throw new Error('No se encontró PlantillaExtraccion en el JSON');\n}\n\nconsole.log(`✅ Extraídos ${Object.keys(plantilla).length} campos de PlantillaExtraccion`);\n\nreturn {\n  json: {\n    PlantillaExtraccion: plantilla,\n    originalText: textoIA,\n    cleanedText: jsonString\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2208,
+        272
+      ],
+      "id": "9f42ec56-215e-445d-9abe-9639f73bff8d",
+      "name": "Transf. Data",
+      "notesInFlow": true,
+      "notes": "Transforma los resultados entregados por la IA a un formato JSON correcto."
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $('Carga de Plantillas').item.json.Hacienda +\"-\"+ $('Carga de Plantillas').item.json.Modelo+\".json\" }}",
+        "filter": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2416,
+        272
+      ],
+      "id": "5a058787-5e80-4b84-8712-50aa58fa6af1",
+      "name": "Busca JSON Homol.",
+      "executeOnce": false,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0Jj7KaYqHbFj2IBe",
+          "name": "Google Drive account"
+        }
+      },
+      "notes": "Busca en el drive el JSON correspondiente a la hacienda y modelo correctos."
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2576,
+        272
+      ],
+      "id": "f9c63f84-90e2-40f0-90a3-090e5e1061fd",
+      "name": "Descarga JSON",
+      "executeOnce": false,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0Jj7KaYqHbFj2IBe",
+          "name": "Google Drive account"
+        }
+      },
+      "notes": "Descarga la información del JSON con la homologación lista."
+    },
+    {
+      "parameters": {
+        "operation": "fromJson",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        2736,
+        272
+      ],
+      "id": "b4236e3f-e1d7-441f-be2e-a43b9fa98781",
+      "name": "Transforma Data a JSON",
+      "notes": "Convierte la información tipo binary en JSON para dejar listo el proceso de homologación"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// 🎯 ENTRADAS\nconst homologacionData = $('Transforma Data a JSON').item.json.data;   \nconst analyzeNode = $('Analyze an image').item.json;\n\n// Extraer texto de la IA\nconst textoIA = analyzeNode.content?.parts?.[0]?.text || \"\";\n\n// Limpiar delimitadores de ```json\nlet jsonString = textoIA\n  .replace(/```json/g, '')\n  .replace(/```/g, '')\n  .trim();\n\n// Intentar extraer solo la parte JSON\nif (jsonString.includes('{') && jsonString.includes('}')) {\n  const inicio = jsonString.indexOf('{');\n  const fin = jsonString.lastIndexOf('}') + 1;\n  jsonString = jsonString.substring(inicio, fin);\n}\n\n// Parsear\nlet parsed;\ntry {\n  parsed = JSON.parse(jsonString);\n} catch (e) {\n  throw new Error(\"❌ No se pudo parsear la salida de Analyze an image: \" + e.message + \"\\nTexto: \" + jsonString.substring(0,200));\n}\n\n// Obtener PlantillaExtraccion\nconst datosExtraidos = parsed.PlantillaExtraccion || parsed.datosExtraidos?.PlantillaExtraccion;\n\nif (!homologacionData || !homologacionData.homologacion || !datosExtraidos) {\n  return [{\n    json: {\n      error: \"❌ No encontré 'homologacion' o 'PlantillaExtraccion'\",\n      keysDisponibles: {\n        transforma: Object.keys($('Transforma Data a JSON').item?.json || {}),\n        analyze: Object.keys(analyzeNode || {}),\n        parsed: Object.keys(parsed || {})\n      }\n    }\n  }];\n}\n\nconst homologacion = homologacionData.homologacion;\nconst resultados = [];\nconst errores = [];\n\n// 🔁 PROCESAR CADA CAMPO\nfor (const [claveCompleta, valor] of Object.entries(datosExtraidos)) {\n  try {\n    let codigo;\n\n    // NUEVA LÓGICA: Extraer todo lo que está antes del primer underscore _\n    if (claveCompleta.includes('_')) {\n      codigo = claveCompleta.split('_')[0].trim();\n    } else {\n      // Si no hay underscore, usar la clave completa\n      codigo = claveCompleta;\n    }\n\n    // Buscar en homologación\n    let celdaDestino = homologacion[codigo];\n\n    // Estrategia 1: si es \"+\" (suma de códigos)\n    if (!celdaDestino && codigo.includes('+')) {\n      const codigosIndividuales = codigo.split('+');\n      for (const codigoInd of codigosIndividuales) {\n        if (homologacion[codigoInd]) {\n          celdaDestino = homologacion[codigoInd];\n          break;\n        }\n      }\n    }\n\n    // Estrategia 2: si es \"-\" (resta de códigos)\n    if (!celdaDestino && codigo.includes('-') && !codigo.startsWith('-')) {\n      const codigosIndividuales = codigo.split('-');\n      for (const codigoInd of codigosIndividuales) {\n        if (homologacion[codigoInd]) {\n          celdaDestino = homologacion[codigoInd];\n          break;\n        }\n      }\n    }\n\n    // Estrategia 3: múltiples negativos tipo \"-317-319-321\"\n    if (!celdaDestino && codigo.match(/^(-\\d+){2,}/)) {\n      const match = codigo.match(/^(-\\d+-?)+/);\n      if (match) {\n        const codigoLimpio = match[0].replace(/-$/, '');\n        const codigosIndividuales = codigoLimpio.split('-').filter(c => c !== '');\n        for (const codigoInd of codigosIndividuales) {\n          if (homologacion['-' + codigoInd]) {\n            celdaDestino = homologacion['-' + codigoInd];\n            break;\n          }\n        }\n      }\n    }\n\n    // Estrategia 4: clave completa (como respaldo)\n    if (!celdaDestino) {\n      celdaDestino = homologacion[claveCompleta];\n    }\n\n    if (celdaDestino) {\n      resultados.push({\n        claveOriginal: claveCompleta,\n        codigoExtraido: codigo,\n        valor,\n        celdaDestino,\n        status: \"success\"\n      });\n    } else {\n      errores.push({\n        claveOriginal: claveCompleta,\n        codigoExtraido: codigo,\n        valor,\n        error: `Código \"${codigo}\" no encontrado en homologación`,\n        sugerencia: \"Verificar si existe en el mapeo de homologación\"\n      });\n    }\n  } catch (error) {\n    errores.push({\n      claveOriginal: claveCompleta,\n      error: error.message,\n      valor\n    });\n  }\n}\n\n// 📊 ESTADÍSTICAS\nreturn {\n  json: {\n    version: homologacionData.version,\n    hacienda: homologacionData.hacienda,\n    modelo: homologacionData.modelo,\n    resultados,\n    errores,\n    stats: {\n      total: Object.keys(datosExtraidos).length,\n      encontrados: resultados.length,\n      noEncontrados: errores.length,\n      tasaExito: ((resultados.length / Object.keys(datosExtraidos).length) * 100).toFixed(2) + \"%\"\n    },\n    debug: {\n      ejemploProcesamiento: {\n        \"1234+3455+3354+2245_activos\": \"1234+3455+3354+2245\",\n        \"01_RAZON_SOCIAL\": \"01\",\n        \"147+182_SUBPRODUCTOS\": \"147+182\",\n        \"-317-319-321-322_SUELDOS\": \"-317-319-321-322\"\n      }\n    }\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2896,
+        272
+      ],
+      "id": "54f32fe4-5069-4491-9b72-8fda46ee6810",
+      "name": "Ejecuta Homolgación",
+      "notes": "Permite la ejecución entre lo extraído por la IA y los campos para homologar"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://sheets.googleapis.com/v4/spreadsheets/{{ $('Copiar Template').item.json.id }}/values:batchUpdate\n\n\n",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"valueInputOption\": \"USER_ENTERED\",\n  \"data\": {{ JSON.stringify($('Preparar Datos Excel').item.json.data) }}\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3712,
+        272
+      ],
+      "id": "86ff8bf3-f3aa-4e23-82e9-c9a1024eb094",
+      "name": "Escribe en Excel",
+      "executeOnce": false,
+      "credentials": {
+        "oAuth2Api": {
+          "id": "NrfLMgu0Jk3p9SEH",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Nodo: \"Generar Nombre Archivo Único\" (CODE node)\n// Usar datos de nodos anteriores, no de \"Preparar Datos Excel\"\n\nconst hacienda = $('Extrae Haciend y Modelo').item.json.hacienda;\nconst modelo = $('Extrae Haciend y Modelo').item.json.modelo;\nconst timestamp = new Date().getTime();\nconst nombreOriginal = $('Mueve a EN PROCESO').item.json.name;\n\n// Crear nombre único\nconst nombreArchivo = `${hacienda}-${modelo}-${timestamp}-${nombreOriginal.replace('.pdf', '')}.xlsx`;\n\nreturn {\n  json: {\n    nombreArchivo: nombreArchivo,\n    carpetaDestino: \"1ayLEybcYMEvn1oViaiy9N_n5X1fW0UNC\"\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3280,
+        272
+      ],
+      "id": "fd237837-28a5-4b72-991e-745509b29eac",
+      "name": "Generar Nombre Único"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://www.googleapis.com/drive/v3/files/{{ $('Buscar Template Base').item.json.id }}/copy",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"name\": \"{{ $('Generar Nombre Único').item.json.nombreArchivo }}\",\n  \"parents\": [\n    \"{{ $('Generar Nombre Único').item.json.carpetaDestino }}\"\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3568,
+        272
+      ],
+      "id": "79e72d00-0877-46d9-ab94-20fd0d4061a3",
+      "name": "Copiar Template",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "NrfLMgu0Jk3p9SEH",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $('Extrae Haciend y Modelo').item.json.hacienda +\"-\"+ $('Extrae Haciend y Modelo').item.json.modelo }}",
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "15ibVKNRnJ9HoCzhoPKGjN2kroMVESUZM",
+            "mode": "list",
+            "cachedResultName": "BALANCES_TEMPLATES",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/15ibVKNRnJ9HoCzhoPKGjN2kroMVESUZM"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        3424,
+        272
+      ],
+      "id": "0fe2f847-2989-47f8-aee2-ae3566e8c9d4",
+      "name": "Buscar Template Base",
+      "executeOnce": false,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0Jj7KaYqHbFj2IBe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Nodo: \"Preparar Datos Excel\" (CODE node)\nconst resultados = $json.resultados;\nconst metadata = $json.metadata;\n\n// Preparar datos para Excel (formato batchUpdate de Google Sheets)\nconst data = resultados.map(item => ({\n  range: `Hoja 1!${item.celdaDestino}`,\n  values: [[item.valor]] // ← VALORES EXTRAÍDOS por la IA\n}));\n\n\n\nreturn {\n  json: {\n    data: data, // ← Esto es lo que usará \"Escribe en Excel\"\n    metadata: {\n      totalCampos: $json.stats.total,\n      camposEncontrados: $json.stats.encontrados\n    }\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3056,
+        272
+      ],
+      "id": "8ee1fa91-e6ae-468e-9d88-a9ca8f7fb474",
+      "name": "Preparar Datos Excel"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1arx1L2YeKdvWwkeFQDot6SECCWg6rjfkzeed0uMRu-M",
+          "mode": "list",
+          "cachedResultName": "RESULTADOS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1arx1L2YeKdvWwkeFQDot6SECCWg6rjfkzeed0uMRu-M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1arx1L2YeKdvWwkeFQDot6SECCWg6rjfkzeed0uMRu-M/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nombre": "={{ $json.name }}",
+            "Hacienda": "={{ $('Extrae Haciend y Modelo').item.json.hacienda }}",
+            "Modelo": "={{ $('Extrae Haciend y Modelo').item.json.modelo }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Hacienda",
+              "displayName": "Hacienda",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Modelo",
+              "displayName": "Modelo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1504,
+        16
+      ],
+      "id": "cbb9a14b-4b09-4050-a684-2bc91ec2d3ae",
+      "name": "Agregar linea Erroneos",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LvWB67QcnbtBhxoZ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "183hA9wxnl2PGNgpb_4HP7m9BVJ3qv9ICPJYuZdmItK8",
+          "mode": "list",
+          "cachedResultName": "RESULTADOS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/183hA9wxnl2PGNgpb_4HP7m9BVJ3qv9ICPJYuZdmItK8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/183hA9wxnl2PGNgpb_4HP7m9BVJ3qv9ICPJYuZdmItK8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Hacienda": "={{ $('Extrae Haciend y Modelo').item.json.hacienda }}",
+            "Modelo": "={{ $('Extrae Haciend y Modelo').item.json.modelo }}",
+            "Nombre": "={{ $('Generar Nombre Único').item.json.nombreArchivo }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Hacienda",
+              "displayName": "Hacienda",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Modelo",
+              "displayName": "Modelo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        3856,
+        272
+      ],
+      "id": "2acca5d0-4ea3-404e-b70b-b089c17ce07d",
+      "name": "Registra Procesados",
+      "retryOnFail": true,
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LvWB67QcnbtBhxoZ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## FASE #1\n**Captura y procesamiento de documento**\nPermite capturar el archivo PDF a procesar, se valida si cumple con criterio (.pdf). [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 592,
+        "width": 784
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        48
+      ],
+      "id": "db327409-22e9-4f64-8916-be8dc266b50f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## FASE #2\n**Extracción y depuración de información**\nSelección y afinamiento de data. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 480,
+        "width": 688,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "77392981-33ad-40e2-b14c-39c008dd9fed",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## FASE #3\n**Clasificación de Modelo y Validación Inicial** \nMediante IA se usa un Prompt que extrae Haciend-Modelo, descarta incorrectos o\n sin poder identificar resultados [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 448,
+        "width": 960,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "id": "67b57f7d-ce25-4493-acfd-c71cc5d8bedf",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## FASE #4\n**Extracción de campos** \nCarga de plantillas para cada hacienda - modelo / Construcción dinámica de Prompt. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 400,
+        "width": 624,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1696,
+        48
+      ],
+      "id": "276a31f5-86f7-4239-b675-307af9475a55",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## FASE #5\n**Homologación información vs campos** \nSe cargan los JSON con los códigos de campos y celdas donde se deben escribir en el Excel resultante. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 336,
+        "width": 848,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        128
+      ],
+      "id": "fc69635c-2285-4077-bdd7-541a6e960a71",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## FASE #6 \n**Cargue de data y escritura en archivo definitivo**\nSe crea nombre para archivo de salida con Timestamp, se carga plantilla base de acuerdo a Hacienda-Modelo, Se escribe sobre archivo de salida, se registra el procesamiento final. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 336,
+        "width": 784
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3248,
+        128
+      ],
+      "id": "fc9e0eb4-3fa5-4132-982a-ece99459e115",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "text": "Analiza esta imagen \nnombre de archivo: {{ $('Mueve a EN PROCESO').item.json.name }}\n\nAnaliza el texto para identificar:\n\n1. **Hacienda**: Determina si corresponde a Bizkaia, Álava, Estatal (si contiene el texto \"https://sede.agenciatributaria.gob.es\"), Gipuzkoa, Navarra o Desconocido.\n\n2. **Modelo**: (validar primero del nombre del archivo) Identifica si es uno de los siguientes:\n\n- **Normal**: si el texto contiene expresiones como \"modalidad normal\", \"formato normal\", \"modelo normal\",\"Eredu arrunta\", \"modelo completo\", \"modelo estándar\", \"pérdidas y ganancias: modalidad normal\", o no hay ninguna mención a abreviado, consolidado ni PYME.\n- **Abreviado**: si contiene expresiones como \"modalidad abreviada\", \"modelo abreviado\", \"Eredu laburtua\", \"modelo PYME\", \"formato PYME\", \"ETEen eredua\" o cualquier mención a PYMES. Si hay duda entre PYME y otro, clasifica como Abreviado.\n- **Consolidado**: si contiene expresiones como \"modelo consolidado\", \"grupo consolidado\", \"cuentas consolidadas\", \"estados financieros consolidados\", \"resultado consolidado\".\n- Si no se identifica claramente, usar \"Desconocido\".\n\nResponde ÚNICAMENTE en formato JSON válido con esta estructura exacta:\n\n{\n  \"hacienda\": \"\",\n  \"modelo\": \"\"\n}\n\nInstrucciones adicionales:\n- No incluyas explicaciones, comentarios ni texto fuera del JSON\n- Usa exactamente las palabras clave proporcionadas como valores\n- Asegúrate de que el JSON sea válido y bien formado\n1. **Hacienda**: Determina si corresponde a Bizkaia, Álava, Estatal (si contiene el texto \"https://sede.agenciatributaria.gob.es\"), Gipuzkoa, Navarra o Desconocido.\n\n2. **Modelo**: (validar primero del nombre del archivo) Identifica si es uno de los siguientes:\n\n- **Normal**: si el texto contiene expresiones como \"modalidad normal\", \"formato normal\", \"modelo normal\", \"modelo completo\", \"modelo estándar\", \"pérdidas y ganancias: modalidad normal\", o no hay ninguna mención a abreviado, consolidado ni PYME.\n- **Abreviado**: si contiene expresiones como \"modalidad abreviada\", \"modelo abreviado\", \"modelo PYME\", \"formato PYME\", o cualquier mención a PYMES. Si hay duda entre PYME y otro, clasifica como Abreviado.\n- **Consolidado**: si contiene expresiones como \"modelo consolidado\", \"grupo consolidado\", \"cuentas consolidadas\", \"estados financieros consolidados\", \"resultado consolidado\".\n- Si no se identifica claramente, usar \"Desconocido\".\n\nResponde ÚNICAMENTE en formato JSON válido con esta estructura exacta:\n\n{\n  \"hacienda\": \"\",\n  \"modelo\": \"\"\n}\n\nInstrucciones adicionales:\n- No incluyas explicaciones, comentarios ni texto fuera del JSON\n- Usa exactamente las palabras clave proporcionadas como valores\n- Asegúrate de que el JSON sea válido y bien formado",
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        48,
+        320
+      ],
+      "id": "d492966d-97e4-4a99-ba93-013aa47d36b1",
+      "name": "Analyze image",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5LN1elB7PXKjRDYe",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "text": "=Analiza el siguiente balance y extrae los valores numéricos asociados a cada ítem, la razon social y la fecha.\nTen en cuenta que en el documento los valores aparecen al frente del nombre del ítem (ejemplo: Activos corrientes..................848733,56). \n\nInstrucciones: \nUsa únicamente los valores numéricos que estén frente a cada ítem. \n\nSi un ítem no aparece en el documento, escribe 0. \n\nitems que inicien con un (-) los valores deben quedar negativos. \n\nSi el código de un campo está compuesto (ejemplo 1575+1568), busca cada código en el documento (1575, 1568), extrae sus valores y devuelve la suma o resta en el campo compuesto.\n\nNo inventes valores ni agregues comentarios. \n\nEL promedio de empleados se debe aproximar al valor entero mas cercano, sumar si es necesario personal asalariado fijo y no fijo.\n\nLa fecha siempre esta relacionada a un periodo, se escoge el valor final. (ej 01/01/2023 - 12/12/2023) se escoge 12/12/2023 (se puede llamar periodo impositivo o puede ir acompañado de un valor 91)\n\nDevuelve la respuesta en un JSON válido, respetando exactamente la siguiente estructura y nombres de campo: \n\n{{ JSON.stringify($json, null,2) }}",
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        2048,
+        272
+      ],
+      "id": "924baed5-db1d-483b-85e0-2756ccefa716",
+      "name": "Analyze an image",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5LN1elB7PXKjRDYe",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1904,
+        160
+      ],
+      "id": "f82305d0-f7c1-450f-8185-f69dfa2862a7",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valida Existencia PDF": {
+      "main": [
+        [
+          {
+            "node": "Mueve a EN PROCESO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mueve a EN PROCESO": {
+      "main": [
+        [
+          {
+            "node": "Valida si es PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrae Haciend y Modelo": {
+      "main": [
+        [
+          {
+            "node": "Valida si son correctos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valida si son correctos": {
+      "main": [
+        [
+          {
+            "node": "Mueve a ERROR",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mueve a PROCESADOS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mueve a ERROR": {
+      "main": [
+        [
+          {
+            "node": "Agregar linea Erroneos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mueve a PROCESADOS": {
+      "main": [
+        [
+          {
+            "node": "Carga de Plantillas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valida si es PDF": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mueve a DESCARTADOS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valida si es balance": {
+      "main": [
+        [
+          {
+            "node": "Extrae Haciend y Modelo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mueve a DESCARTADOS1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Carga de Plantillas": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Transf. Data": {
+      "main": [
+        [
+          {
+            "node": "Busca JSON Homol.",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Busca JSON Homol.": {
+      "main": [
+        [
+          {
+            "node": "Descarga JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descarga JSON": {
+      "main": [
+        [
+          {
+            "node": "Transforma Data a JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transforma Data a JSON": {
+      "main": [
+        [
+          {
+            "node": "Ejecuta Homolgación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ejecuta Homolgación": {
+      "main": [
+        [
+          {
+            "node": "Preparar Datos Excel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Escribe en Excel": {
+      "main": [
+        [
+          {
+            "node": "Registra Procesados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generar Nombre Único": {
+      "main": [
+        [
+          {
+            "node": "Buscar Template Base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Template Base": {
+      "main": [
+        [
+          {
+            "node": "Copiar Template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copiar Template": {
+      "main": [
+        [
+          {
+            "node": "Escribe en Excel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Datos Excel": {
+      "main": [
+        [
+          {
+            "node": "Generar Nombre Único",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image": {
+      "main": [
+        [
+          {
+            "node": "Valida si es balance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze an image": {
+      "main": [
+        [
+          {
+            "node": "Transf. Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Analyze an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "dAezYJN2GoU9LtO5"
+  },
+  "versionId": "28dad473-cb8f-43a2-b09d-edd5ad594805",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "663060821d6be0edc49ba37f3934ee406411e84b3abd2007a78db8a6d47d596a"
+  },
+  "id": "1Na6pD08FPZOCblj",
+  "tags": []
+}
