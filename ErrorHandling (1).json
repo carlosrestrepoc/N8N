@@ -1,0 +1,64 @@
+{
+  "name": "ErrorHandling",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6a744c40-ecc4-4cc0-b0af-395bfe22d548",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "sendTo": "carlosrestrepoc@gmail.com",
+        "subject": "=EXCEPCION -  {{ $json.workflow.name }}",
+        "message": "=<!DOCTYPE html>\n<html lang=\"es\" style=\"margin:0;padding:0;\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"x-apple-disable-message-reformatting\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/>\n  <title>Alerta de Incidencia</title>\n  <style>\n    @media (prefers-color-scheme: dark) {\n      .card { background:#141414 !important; color:#eaeaea !important; }\n      .muted { color:#bdbdbd !important; }\n      .chip  { background:#2a2a2a !important; color:#eaeaea !important; border-color:#3a3a3a !important; }\n      .btn   { background:#3b82f6 !important; color:#fff !important; }\n    }\n  </style>\n</head>\n<body style=\"margin:0;padding:0;background:#f4f6f8;font-family:Segoe UI,Roboto,Arial,sans-serif;color:#1f2937;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background:#f4f6f8;padding:24px 0;\">\n    <tr>\n      <td align=\"center\" style=\"padding:0 16px;\">\n        <!-- Contenedor -->\n        <table class=\"card\" role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:640px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;\">\n          <!-- Header -->\n          <tr>\n            <td style=\"padding:20px 24px;background:#0ea5e9;color:#fff;\">\n              <table width=\"100%\" role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                <tr>\n                  <td align=\"left\" style=\"font-size:0;\">\n                    <img src=\"https://sgtech.tech/wp-content/uploads/2024/02/logo-sg-tech-2x.png\" \n                         width=\"140\" height=\"auto\" \n                         alt=\"SGTECH\" \n                         style=\"display:block;border:0;outline:none;text-decoration:none;\">\n                  </td>\n                  <td align=\"right\">\n                    <span class=\"chip\" style=\"display:inline-block;padding:6px 10px;border-radius:999px;background:#22d3ee;color:#0b1220;font-weight:600;border:1px solid rgba(255,255,255,0.35);font-size:12px;letter-spacing:0.3px;\">\n                      ⚠️ Incidencia\n                    </span>\n                  </td>\n                </tr>\n              </table>\n              <h1 style=\"margin:14px 0 0 0;font-size:20px;line-height:28px;font-weight:700;\">\n                Se ha generado una incidencia en el flujo\n              </h1>\n              <div class=\"muted\" style=\"margin-top:4px;font-size:13px;opacity:.95;\">\n                {{ $json.workflow?.name || \"Workflow\" }} — Ejecución #{{ $json.execution?.id || \"-\" }}\n              </div>\n            </td>\n          </tr>\n\n          <!-- Cuerpo -->\n          <tr>\n            <td style=\"padding:20px 24px;\">\n              <p style=\"margin:0 0 12px 0;font-size:15px;line-height:22px;\">\n                Hola equipo,\n              </p>\n              <p style=\"margin:0 0 16px 0;font-size:15px;line-height:22px;\">\n                Se detectó un error durante la ejecución del flujo. A continuación, el detalle:\n              </p>\n\n              <!-- Resumen principal -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"border-collapse:separate;border-spacing:0 8px;\">\n                <tr>\n                  <td style=\"width:180px;padding:10px 12px;background:#f1f5f9;border-radius:8px 0 0 8px;font-weight:600;\">Nodo</td>\n                  <td style=\"padding:10px 12px;background:#f8fafc;border-radius:0 8px 8px 0;\">\n                    {{ $json.execution?.lastNodeExecuted || \"Desconocido\" }}\n                  </td>\n                </tr>\n                <tr>\n                  <td style=\"width:180px;padding:10px 12px;background:#f1f5f9;border-radius:8px 0 0 8px;font-weight:600;\">Mensaje</td>\n                  <td style=\"padding:10px 12px;background:#f8fafc;border-radius:0 8px 8px 0;\">\n                    {{ $json.execution?.error?.message || \"Sin mensaje\" }}\n                  </td>\n                </tr>\n                <tr>\n                  <td style=\"width:180px;padding:10px 12px;background:#f1f5f9;border-radius:8px 0 0 8px;font-weight:600;\">Código</td>\n                  <td style=\"padding:10px 12px;background:#f8fafc;border-radius:0 8px 8px 0;\">\n                    {{ $json.execution?.error?.code || \"-\" }}\n                  </td>\n                </tr>\n                <tr>\n                  <td style=\"width:180px;padding:10px 12px;background:#f1f5f9;border-radius:8px 0 0 8px;font-weight:600;\">Fecha</td>\n                  <td style=\"padding:10px 12px;background:#f8fafc;border-radius:0 8px 8px 0;\">\n                    {{ $json.execution?.finished || new Date().toISOString() }}\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Bloque de detalle/stack opcional -->\n              <div style=\"margin-top:16px\">\n                <div style=\"font-weight:600;margin-bottom:8px;\">Detalle</div>\n                <pre style=\"margin:0;padding:12px;background:#0f172a;color:#e2e8f0;border-radius:8px;white-space:pre-wrap;word-wrap:break-word;font-size:12px;line-height:18px;\">\n{{ $json.execution?.error?.stack || $json.execution?.error?.description || \"Sin detalle adicional\" }}\n                </pre>\n              </div>\n\n              <!-- CTA -->\n              <div style=\"margin-top:20px;\">\n                <a href=\"{{ $json.execution?.url || $json.workflow?.url || '#' }}\"\n                   class=\"btn\"\n                   style=\"display:inline-block;background:#2563eb;color:#fff;text-decoration:none;font-weight:600;padding:10px 14px;border-radius:8px;\">\n                  Ver ejecución en n8n\n                </a>\n              </div>\n            </td>\n          </tr>\n\n          <!-- Footer -->\n          <tr>\n            <td style=\"padding:16px 24px;border-top:1px solid #e5e7eb;\">\n              <div class=\"muted\" style=\"font-size:12px;color:#6b7280;\">\n                Este mensaje fue generado automáticamente por el sistema de alertas de n8n — SGTECH.\n              </div>\n            </td>\n          </tr>\n\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "7a1b4b3a-e117-49e9-bfc7-8a034d8e4f40",
+      "name": "Send a message",
+      "webhookId": "cdbdc13d-a9f2-4a78-be50-5a7e2aeee19d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Fgc7QFtwVXJIrozt",
+          "name": "Gmail SGTECH"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "44c2e706-dbf6-4d08-bc4b-6eb2ffbbba29",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "64131b8660a0fc101c49c977e6d21c2e33ebb5bea307b2b26c6b5d01965f154b"
+  },
+  "id": "GJD8nRFgTwtvZOf6",
+  "tags": []
+}
