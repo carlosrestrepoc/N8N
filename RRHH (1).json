@@ -1,0 +1,744 @@
+{
+  "name": "RRHH",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4e5b1f50-bab0-49eb-9b84-4236d6ce1571",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.siigo.com/auth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Partner-Id",
+              "value": "n8nSgtech"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n    \"username\": \"contabisistemos@hotmail.com\",\n    \"access_key\": \"OWQxZDhhYmEtNGQxNS00MGQyLWIzZDMtMjI0YjNhODFjNmU2OjBPTDF3L3ZzOVk=\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        128,
+        0
+      ],
+      "id": "d0b0d757-13a8-48ea-8566-f43b68f99011",
+      "name": "Siigo Auth",
+      "notes": "Obtención de Token Siigo"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b31582d1-2c2d-40a6-8ab3-3320c9c21390",
+              "name": "created_start",
+              "value": "={{$now.minus({days:1}).startOf('day').toISO()}}",
+              "type": "string"
+            },
+            {
+              "id": "ed8874e9-9012-4c47-bede-1047bdf27931",
+              "name": "created_end",
+              "value": "={{$now.endOf('day').toISO()}}",
+              "type": "string"
+            },
+            {
+              "id": "3717543d-d5bd-4a91-8026-edbaaec16a09",
+              "name": "page",
+              "value": "1",
+              "type": "string"
+            },
+            {
+              "id": "4378dd21-e9b4-4a5d-8df9-b1da577c0ae5",
+              "name": "page_size",
+              "value": "100",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        0
+      ],
+      "id": "d49b1529-512c-4b1f-a88f-74478db1e968",
+      "name": "Cargue Argumentos"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.siigo.com/v1/invoices",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "created_start",
+              "value": "=2025-10-01T00:00:00.000-04:00"
+            },
+            {
+              "name": "created_end",
+              "value": "={{ $json.created_end }}"
+            },
+            {
+              "name": "page",
+              "value": "={{ $json.page }}"
+            },
+            {
+              "name": "page_size",
+              "value": "={{ $json.page_size }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$node[\"Siigo Auth\"].json[\"access_token\"]}}"
+            },
+            {
+              "name": "Partner-Id",
+              "value": "n8nSgtech"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        432,
+        0
+      ],
+      "id": "98319f0a-6eb4-45ce-8dec-f8be640cf111",
+      "name": "Llamado API Siigo"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "results",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        560,
+        0
+      ],
+      "id": "2d83d614-5da3-4765-9cd0-4d7702407d0d",
+      "name": "Organización"
+    },
+    {
+      "parameters": {
+        "jsCode": "function fnv1a(str) {\n  let h = 0x811c9dc5 >>> 0;\n  for (let i = 0; i < str.length; i++) {\n    h ^= str.charCodeAt(i);\n    h = (h + (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)) >>> 0;\n  }\n  return h.toString(16).padStart(8, '0');\n}\n\nconst out = [];\nfor (const it of items) {\n  const inv = it.json;                  // una factura\n  const invoiceNo = `${inv.prefix ?? ''}${inv.number ?? ''}` || inv.name || '';\n  const invoiceId = inv.id;\n\n  if (!Array.isArray(inv.items)) continue;\n\n  for (const row of inv.items) {\n    if (Array.isArray(row.taxes) && row.taxes.length) {\n      for (const tx of row.taxes) {\n        out.push({ json: {\n          invoice_id: invoiceId,\n          invoice_no: invoiceNo,\n          item_id: row.id,\n          code: row.code ?? null,\n          description: row.description ?? null,\n          quantity: Number(row.quantity ?? 0),\n          price: Number((row.price ?? 0).toFixed(2)),\n          line_total: Number((row.total ?? 0).toFixed(2)),\n          tax_id: tx.id ?? null,\n          tax_name: tx.name ?? null,\n          tax_percentage: Number(tx.percentage ?? 0),\n          tax_value: Number((tx.value ?? 0).toFixed(2)),\n          hash: fnv1a(`${invoiceNo}|${row.id}|${tx.id ?? ''}|${row.total}`)\n        }});\n      }\n    } else {\n      out.push({ json: {\n        invoice_id: invoiceId,\n        invoice_no: invoiceNo,\n        item_id: row.id,\n        code: row.code ?? null,\n        description: row.description ?? null,\n        quantity: Number(row.quantity ?? 0),\n        price: Number((row.price ?? 0).toFixed(2)),\n        line_total: Number((row.total ?? 0).toFixed(2)),\n        tax_id: null,\n        tax_name: null,\n        tax_percentage: 0,\n        tax_value: 0,\n        hash: fnv1a(`${invoiceNo}|${row.id}|${row.total}`)\n      }});\n    }\n  }\n}\nreturn out;   // una sola salida con todas las filas de detalle\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        -80
+      ],
+      "id": "f1a44139-97bd-4019-a0a2-a42a2da22e1c",
+      "name": "Detalles"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "function fnv1a(str) {\n  let h = 0x811c9dc5 >>> 0;\n  for (let i = 0; i < str.length; i++) {\n    h ^= str.charCodeAt(i);\n    h = (h + (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)) >>> 0;\n  }\n  return h.toString(16).padStart(8, '0');\n}\nfunction daysBetween(a, b) {\n  if (!a || !b) return null;\n  const d1 = new Date(a), d2 = new Date(b);\n  return Math.round((d2 - d1) / (1000*60*60*24));\n}\n\nconst r = $json; // ya es UNA factura (gracias al Split Out Items)\n\nconst invoiceNo = `${r.prefix ?? ''}${r.number ?? ''}` || r.name || '';\nconst date = r.date || null;\nconst due  = r.payments?.[0]?.due_date || null;\nconst plazo = daysBetween(date, due);\n\n// sumas\nlet impuestosTotal = 0, retencionesTotal = 0;\nif (Array.isArray(r.items)) {\n  for (const it of r.items) {\n    if (Array.isArray(it.taxes)) {\n      for (const t of it.taxes) impuestosTotal += Number(t.value || 0);\n    }\n  }\n}\nif (Array.isArray(r.retentions)) {\n  for (const ret of r.retentions) retencionesTotal += Number(ret.value || 0);\n}\nconst subtotalEstimado = (Number(r.total || 0) - impuestosTotal - retencionesTotal);\n\nreturn {\n  invoice_id: r.id,\n  document_id: r.document?.id ?? null,\n  invoice_no: invoiceNo,\n  prefix: r.prefix ?? null,\n  number: r.number ?? null,\n  date,\n  due_date: due,\n  plazo_dias: plazo,\n  customer_id: r.customer?.id ?? null,\n  customer_identification: r.customer?.identification ?? null,\n  cost_center: r.cost_center ?? null,\n  seller: r.seller ?? null,\n  subtotal_est: Number.isFinite(subtotalEstimado) ? Number(subtotalEstimado.toFixed(2)) : null,\n  impuestos_total: Number(impuestosTotal.toFixed(2)),\n  retenciones_total: Number(retencionesTotal.toFixed(2)),\n  total: Number((r.total ?? 0).toFixed(2)),\n  balance: Number((r.balance ?? 0).toFixed(2)),\n  stamp_status: r.stamp?.status ?? null,\n  cufe: r.stamp?.cufe ?? null,\n  mail_status: r.mail?.status ?? null,\n  created_at: r.metadata?.created ?? null,\n  updated_at: r.metadata?.last_updated ?? null,\n  public_url: r.public_url ?? null,\n  hash: fnv1a(`${invoiceNo}|${r.total}|${date}`)\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        80
+      ],
+      "id": "26c91834-64e6-4bce-81ca-10ff665d7728",
+      "name": "Encabezados"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "BEbRrzeHMHNelakt",
+          "mode": "list",
+          "cachedResultName": "FacturasSiigo",
+          "cachedResultUrl": "/projects/eg4gYJzG3qBcsh6t/datatables/BEbRrzeHMHNelakt"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "invoice_no": "={{ $json.invoice_no }}",
+            "description": "={{ $json.description }}",
+            "quantity": "={{ $json.quantity }}",
+            "price": "={{ $json.price }}",
+            "line_total": "={{ $json.line_total }}",
+            "tax_id": "={{ $json.tax_id }}",
+            "tax_name": "={{ $json.tax_name }}",
+            "tax_percentage": "={{ $json.tax_percentage }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "invoice_id",
+              "displayName": "invoice_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "invoice_no",
+              "displayName": "invoice_no",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "quantity",
+              "displayName": "quantity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "price",
+              "displayName": "price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "line_total",
+              "displayName": "line_total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "tax_id",
+              "displayName": "tax_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "tax_percentage",
+              "displayName": "tax_percentage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "tax_name",
+              "displayName": "tax_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "item_id",
+              "displayName": "item_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "code",
+              "displayName": "code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "hash",
+              "displayName": "hash",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "tax_value",
+              "displayName": "tax_value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        928,
+        -80
+      ],
+      "id": "97c1efa9-a8ad-4500-b9e3-882e6a0aff28",
+      "name": "FacturasSiigo"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "1qK1q1qbH3BaNGdU",
+          "mode": "list",
+          "cachedResultName": "DetalleFacturas",
+          "cachedResultUrl": "/projects/eg4gYJzG3qBcsh6t/datatables/1qK1q1qbH3BaNGdU"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "invoice_id",
+              "displayName": "invoice_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "document_id",
+              "displayName": "document_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "invoice_no",
+              "displayName": "invoice_no",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "prefix",
+              "displayName": "prefix",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "number",
+              "displayName": "number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "due_date",
+              "displayName": "due_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "plazo_dias",
+              "displayName": "plazo_dias",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "customer_id",
+              "displayName": "customer_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "customer_identification",
+              "displayName": "customer_identification",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "cost_center",
+              "displayName": "cost_center",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "seller",
+              "displayName": "seller",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "subtotal_est",
+              "displayName": "subtotal_est",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "impuestos_total",
+              "displayName": "impuestos_total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "retenciones_total",
+              "displayName": "retenciones_total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "total",
+              "displayName": "total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "balance",
+              "displayName": "balance",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "stamp_status",
+              "displayName": "stamp_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "cufe",
+              "displayName": "cufe",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "mail_status",
+              "displayName": "mail_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "public_url",
+              "displayName": "public_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "hash",
+              "displayName": "hash",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        928,
+        80
+      ],
+      "id": "4296feb2-14d9-4769-b88e-63c7e65bf8b1",
+      "name": "DetalleFacturas"
+    }
+  ],
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2025-10-10T14:21:26.763-04:00",
+          "Readable date": "October 10th 2025, 2:21:26 pm",
+          "Readable time": "2:21:26 pm",
+          "Day of week": "Friday",
+          "Year": "2025",
+          "Month": "October",
+          "Day of month": "10",
+          "Hour": "14",
+          "Minute": "21",
+          "Second": "26",
+          "Timezone": "America/New_York (UTC-04:00)"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Siigo Auth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Siigo Auth": {
+      "main": [
+        [
+          {
+            "node": "Cargue Argumentos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cargue Argumentos": {
+      "main": [
+        [
+          {
+            "node": "Llamado API Siigo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Llamado API Siigo": {
+      "main": [
+        [
+          {
+            "node": "Organización",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Organización": {
+      "main": [
+        [
+          {
+            "node": "Encabezados",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Detalles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detalles": {
+      "main": [
+        [
+          {
+            "node": "FacturasSiigo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Encabezados": {
+      "main": [
+        [
+          {
+            "node": "DetalleFacturas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DetalleFacturas": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a9c18d2e-8d87-4599-b805-73d2fdbbf281",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "64131b8660a0fc101c49c977e6d21c2e33ebb5bea307b2b26c6b5d01965f154b"
+  },
+  "id": "wd3ZrqdKETC3RXib",
+  "tags": []
+}
